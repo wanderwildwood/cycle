@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- What shows under the icon. Changing this is a one-line change; the applicationId is not. -->
+    <string name="app_name">Cycle Tracking</string>
+</resources>

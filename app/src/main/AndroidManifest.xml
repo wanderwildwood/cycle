@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!--
+      There are no <uses-permission> lines, and there is not going to be.
+
+      This is the one property of this app that matters most: with no INTERNET there is no
+      mechanism by which what you record could leave the phone, whatever else goes wrong.
+      A reminder notification would pull in POST_NOTIFICATIONS and SCHEDULE_EXACT_ALARM;
+      a crash reporter or an update check would pull in INTERNET. If any of those ever look
+      necessary, that is the moment to stop and decide deliberately, not a detail to add.
+    -->
+
+    <application
+        android:allowBackup="false"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.Cycle">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.Cycle">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+    </application>
+
+</manifest>
