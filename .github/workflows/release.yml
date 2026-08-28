@@ -117,4 +117,5 @@ jobs:
             cycle-*.apk.sha256
             cycle.apk
             cycle.apk.sha256
+          body_path: .github/release-body.md
           generate_release_notes: true

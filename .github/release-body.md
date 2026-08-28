@@ -1,7 +1,5 @@
 A cycle tracker for the Mudita Kompakt. Written from scratch.
 
-**0.1.0** — the first release.
-
 ## How a period is recorded
 
 Every day is confirmed by hand. Nothing is filled in on your behalf, and nothing ends a
