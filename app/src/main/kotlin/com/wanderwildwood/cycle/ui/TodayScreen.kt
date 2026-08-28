@@ -4,14 +4,20 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -47,6 +53,9 @@ fun TodayScreen(
     offerBackup: Boolean,
     onBackUp: () -> Unit,
 ) {
+    var aboutOpen by remember { mutableStateOf(false) }
+    if (aboutOpen) AboutDialog(onDismiss = { aboutOpen = false })
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -54,11 +63,22 @@ fun TodayScreen(
             .padding(horizontal = 24.dp, vertical = 32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Text(
-            text = today.format(DayAndMonth),
-            fontSize = 15.sp,
-            fontWeight = FontWeight.Normal,
-        )
+        // The date stays centred on the screen, not centred in what is left over beside the
+        // mark: the mark is placed on top of the row rather than in it, so adding it moved
+        // nothing that was already there.
+        Box(modifier = Modifier.fillMaxWidth()) {
+            Text(
+                text = today.format(DayAndMonth),
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Normal,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth().align(Alignment.Center),
+            )
+            AboutMark(
+                onClick = { aboutOpen = true },
+                modifier = Modifier.align(Alignment.CenterEnd).offset(x = 12.dp, y = (-10).dp),
+            )
+        }
 
         Spacer(Modifier.height(40.dp))
 
