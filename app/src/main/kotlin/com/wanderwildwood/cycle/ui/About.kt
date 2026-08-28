@@ -60,30 +60,16 @@ fun AboutDialog(onDismiss: () -> Unit) {
                 .fillMaxWidth(),
         ) {
             Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 20.dp)) {
-                Text(text = "Cycle", fontSize = 20.sp)
-                Spacer(Modifier.height(2.dp))
-                Line("Version ${BuildConfig.VERSION_NAME}")
+                Text(text = "Cycle ${BuildConfig.VERSION_NAME}", fontSize = 20.sp)
 
                 Spacer(Modifier.height(14.dp))
-                Line(
-                    "A period tracker. You mark the days you bleed; it counts, and tells you " +
-                        "roughly when the next one is due."
-                )
+                Line("No permissions. No network. What you record stays on this phone.")
 
                 Spacer(Modifier.height(14.dp))
-                Line(
-                    "It asks for no permissions and cannot reach the network. What you record " +
-                        "stays on this phone, and is sent nowhere — not to a server, not to " +
-                        "anyone. Backing up and sending a summary both go through a file or an " +
-                        "app you pick yourself, and only when you pick one."
-                )
+                Line("GNU General Public License v3")
 
                 Spacer(Modifier.height(14.dp))
-                Line("Free software under the GNU General Public License v3.")
-
-                Spacer(Modifier.height(14.dp))
-                Line("Source, and your rights to it:")
-                Line("github.com/wanderwildwood/cycle", weight = FontWeight.Medium)
+                Line("github.com/wanderwildwood/cycle")
 
                 Spacer(Modifier.height(20.dp))
                 Text(
