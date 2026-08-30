@@ -5,6 +5,11 @@ A cycle tracker for the Mudita Kompakt. Written from scratch.
 It has no permissions. There is no `INTERNET` line in the manifest and there is not going to be,
 so what is recorded here has no mechanism by which to leave the phone.
 
+| | |
+|---|---|
+| ![The first run, which asks for nothing](screenshots/1-first-run.png) | ![Today](screenshots/2-today.png) |
+| ![The calendar, recorded against expected](screenshots/3-calendar.png) | ![One day](screenshots/4-day.png) |
+
 ## Where it came from
 
 Not a fork. The behaviour follows Period Tracker (GP International LLC), which is proprietary and
