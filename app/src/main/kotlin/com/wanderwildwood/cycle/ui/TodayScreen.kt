@@ -193,12 +193,16 @@ private fun headline(
 
     val until = forecast.daysUntilNextStart ?: return "No history yet" to "Mark a day to begin"
 
+    // See the note in Summary: this is a guess and stays one, so it is expected rather than
+    // due, and a day past it is later than expected rather than late. The count keeps the
+    // shape the other rows have — a number, and a line under it saying what the number is —
+    // which the bare "3 days late" never did.
     return when {
         until > 1 -> "$until days" to "until your period"
-        until == 1 -> "Tomorrow" to "your period is due"
-        until == 0 -> "Today" to "your period is due"
-        until == -1 -> "1 day late" to null
-        else -> "${-until} days late" to null
+        until == 1 -> "Tomorrow" to "your period is expected"
+        until == 0 -> "Today" to "your period is expected"
+        until == -1 -> "1 day" to "later than expected"
+        else -> "${-until} days" to "later than expected"
     }
 }
 

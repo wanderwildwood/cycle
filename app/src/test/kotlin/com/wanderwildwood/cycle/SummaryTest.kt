@@ -23,13 +23,13 @@ class SummaryTest {
     @Test fun `says the date and the count otherwise`() {
         val today = LocalDate.parse("2021-03-20")
         val s = summary(today, false, forecast(history, today))
-        assertEquals("Period due Wednesday 14 April, 25 days away.", s)
+        assertEquals("Period expected Wednesday 14 April, 25 days away.", s)
     }
 
-    @Test fun `says late once the date has passed`() {
+    @Test fun `says how far past the estimate once the date has passed`() {
         val today = LocalDate.parse("2021-04-15")
         val s = summary(today, false, forecast(history, today))
-        assertEquals("Period is 1 day late.", s)
+        assertEquals("Period is 1 day later than expected.", s)
     }
 
     @Test fun `says nothing confident with no history`() {

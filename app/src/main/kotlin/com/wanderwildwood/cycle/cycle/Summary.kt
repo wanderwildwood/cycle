@@ -36,13 +36,24 @@ fun summary(
     val next = forecast.nextStart ?: return "Nothing recorded yet."
     val until = forecast.daysUntilNextStart ?: return "Nothing recorded yet."
 
+    // Said only while the numbers are still the defaults rather than hers. It means "there is
+    // not enough history yet", which stops being true — unlike the uncertainty below, which
+    // does not. Two different admissions; making this one permanent would blur both.
     val estimate = if (forecast.estimated) " (rough — not enough history yet)" else ""
 
+    // "Expected", not "due", and "later than expected", not "late".
+    //
+    // A date worked out from the median of three cycles is a guess, and it stays a guess after
+    // thirty of them: more history makes it better, never certain. "Due" is the language of a
+    // timetable, and against a timetable a body that arrives on its own schedule is at fault —
+    // so the app was quietly reporting a failure of hers whenever its own arithmetic missed.
+    // The estimate is the thing that was wrong. This says so, in the same breath and no more
+    // words than before.
     return when {
-        until > 1 -> "Period due ${next.format(DayAndDate)}, $until days away$estimate."
-        until == 1 -> "Period due tomorrow$estimate."
-        until == 0 -> "Period due today$estimate."
-        until == -1 -> "Period is 1 day late$estimate."
-        else -> "Period is ${-until} days late$estimate."
+        until > 1 -> "Period expected ${next.format(DayAndDate)}, $until days away$estimate."
+        until == 1 -> "Period expected tomorrow$estimate."
+        until == 0 -> "Period expected today$estimate."
+        until == -1 -> "Period is 1 day later than expected$estimate."
+        else -> "Period is ${-until} days later than expected$estimate."
     }
 }

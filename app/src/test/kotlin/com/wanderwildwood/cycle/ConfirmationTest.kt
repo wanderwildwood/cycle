@@ -71,7 +71,7 @@ class ConfirmationTest {
     @Test fun `the sent line goes back to the countdown once the period has ended`() {
         val today = LocalDate.parse("2021-03-07")
         val line = summary(today, bleedingToday = false, forecast = at("2021-03-07"))
-        assertTrue(line, line.startsWith("Period due"))
+        assertTrue(line, line.startsWith("Period expected"))
     }
 
     @Test fun `confirming a day two days later keeps it one period`() {
