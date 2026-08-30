@@ -34,6 +34,17 @@ For updates without doing this by hand, add this repository to
 It will offer each new release as it appears. **The application id is settled** — updates
 install over what you have, keeping your settings and anything the app has stored.
 
+## How a period is recorded
+
+Every day is confirmed by hand. Period Tracker fills in the days after a start on its own, from the
+average period length; this does not, and will not — a day it filled in would be a day it invented,
+sitting in the record looking exactly like a day you reported.
+
+Nothing ends a period either. There is no button for it. You confirm each day it is still going,
+and when you stop confirming, it stops on its own two days later. That span is the same one the
+grouping tolerates, so a day confirmed late still joins the period rather than starting a new one,
+and it is the reason a single forgotten tap costs nothing.
+
 ## Licence
 
 GPL-3.0-only. See [LICENSE](LICENSE).
@@ -57,14 +68,3 @@ would let someone ship this same code with telemetry added and never publish a l
 is the part of that design that survives the code leaving here.
 
 Lato keeps its own licence — SIL Open Font License 1.1, `LICENSES/OFL-1.1.txt`.
-
-## How a period is recorded
-
-Every day is confirmed by hand. Period Tracker fills in the days after a start on its own, from the
-average period length; this does not, and will not — a day it filled in would be a day it invented,
-sitting in the record looking exactly like a day you reported.
-
-Nothing ends a period either. There is no button for it. You confirm each day it is still going,
-and when you stop confirming, it stops on its own two days later. That span is the same one the
-grouping tolerates, so a day confirmed late still joins the period rather than starting a new one,
-and it is the reason a single forgotten tap costs nothing.
