@@ -26,7 +26,22 @@ data class Forecast(
     /** Negative once the predicted date has passed, which the screens read as "late". */
     val daysUntilNextStart: Int?,
     val estimated: Boolean,
+    /**
+     * The spread of the cycles [cycleLength] was taken from, and of the periods behind
+     * [periodLength]. Null until there is more than one to compare.
+     *
+     * A median stated on its own reads as a fact about a body — "your cycle is 29 days" —
+     * when what is actually known is that the last three ran 27, 29 and 31. The range is
+     * the same knowledge without the false steadiness, and it is hers already: it is the
+     * numbers she generated, shown to her, on her own screen.
+     */
+    val cycleRange: IntRange? = null,
+    val periodRange: IntRange? = null,
 )
+
+/** The span of a set of measurements, or null when there is nothing to compare. */
+internal fun List<Int>.spread(): IntRange? =
+    if (size < 2) null else (minOrNull()!!..maxOrNull()!!)
 
 /**
  * Two days apart still counts as the same period.
@@ -122,6 +137,8 @@ fun forecast(
         daysUntilNextStart = nextStart?.let { ChronoUnit.DAYS.between(today, it).toInt() },
         // True while the numbers are still the defaults rather than your own.
         estimated = recentGaps.isEmpty(),
+        cycleRange = recentGaps.spread(),
+        periodRange = recentLengths.spread(),
     )
 }
 

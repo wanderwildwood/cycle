@@ -146,7 +146,8 @@ fun TodayScreen(
         // Quiet, and only worth saying once there is something behind it.
         if (!forecast.estimated) {
             Text(
-                text = "Cycle ${forecast.cycleLength} days · period ${forecast.periodLength} days",
+                text = "Cycle ${span(forecast.cycleLength, forecast.cycleRange)} · " +
+                    "period ${span(forecast.periodLength, forecast.periodRange)}",
                 fontSize = 13.sp,
                 fontWeight = FontWeight.Normal,
             )
@@ -168,6 +169,19 @@ fun TodayScreen(
         }
     }
 }
+
+/**
+ * A measurement, said as a range where the measurements disagreed.
+ *
+ * "Cycle 29 days" is a single number standing in for three that were not the same, and it reads
+ * as a fact about a body rather than the middle of what has happened lately. Where the last few
+ * cycles ran 27, 29 and 31, "27–31 days" is the same knowledge with the steadiness taken back
+ * out — no longer, and no more precise than the thing it describes. Where they agreed, or where
+ * there is only one, there is no range to give and the number stands.
+ */
+private fun span(middle: Int, range: IntRange?): String =
+    if (range == null || range.first == range.last) "$middle days"
+    else "${range.first}–${range.last} days"
 
 /**
  * The count, and the line under it. The second half is null when there is nothing worth adding.

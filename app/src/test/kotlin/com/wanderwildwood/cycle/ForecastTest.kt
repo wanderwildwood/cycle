@@ -34,6 +34,20 @@ class ForecastTest {
         assertEquals(LocalDate.parse("2021-08-05"), periods.first().end)
     }
 
+    @Test fun `the spread of recent cycles is carried, not just their middle`() {
+        // 28, then 32: a median of 30 that no cycle actually was.
+        val days = run("2021-06-01", 4) + run("2021-06-29", 4) + run("2021-07-31", 4)
+        val f = forecast(days, LocalDate.parse("2021-08-05"))
+        assertEquals(30, f.cycleLength)
+        assertEquals(28..32, f.cycleRange)
+    }
+
+    @Test fun `one cycle has nothing to be a range of`() {
+        val days = run("2021-06-01", 4) + run("2021-06-29", 4)
+        val f = forecast(days, LocalDate.parse("2021-07-05"))
+        assertNull(f.cycleRange)
+    }
+
     @Test fun `a real gap starts a new period`() {
         val periods = periodsFrom(run("2021-06-01", 5) + run("2021-06-29", 5))
         assertEquals(2, periods.size)
