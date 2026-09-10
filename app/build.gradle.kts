@@ -16,8 +16,8 @@ android {
     // The Kompakt runs 28; nothing here needs anything newer.
     minSdk = 28
     targetSdk = 36
-    versionCode = 4
-    versionName = "0.1.3"
+    versionCode = 5
+    versionName = "0.2.0"
   }
 
   // The real keystore in signing/ signs every build type, so the very first install
@@ -86,6 +86,7 @@ android {
 }
 
 dependencies {
+  implementation(libs.mmd)
   implementation(libs.androidx.core.ktx)
   implementation(libs.androidx.lifecycle.runtime)
   implementation(libs.androidx.activity.compose)

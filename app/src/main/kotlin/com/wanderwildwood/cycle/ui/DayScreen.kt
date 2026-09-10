@@ -21,7 +21,7 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Text
+import com.mudita.mmd.components.text.TextMMD
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -116,7 +116,7 @@ fun DayScreen(
             .background(Color.White)
             .padding(horizontal = 16.dp, vertical = 16.dp),
     ) {
-        Text(
+        TextMMD(
             text = day.format(DayHeading),
             fontSize = 17.sp,
             textAlign = TextAlign.Center,
@@ -210,7 +210,7 @@ fun DayScreen(
         // imported notes among them. Driven off the scroll state rather than a spacing tweak
         // because it stays right whatever the vocabulary and whatever the day is carrying.
         if (scroll.canScrollForward) {
-            Text(
+            TextMMD(
                 text = "\u25BE",
                 fontSize = 13.sp,
                 textAlign = TextAlign.Center,
@@ -220,7 +220,7 @@ fun DayScreen(
             )
         }
 
-        Text(
+        TextMMD(
             text = "Done",
             fontSize = 17.sp,
             textAlign = TextAlign.Center,
@@ -235,7 +235,7 @@ fun DayScreen(
 
 @Composable
 private fun Heading(text: String) {
-    Text(text = text, fontSize = 13.sp)
+    TextMMD(text = text, fontSize = 13.sp)
     Spacer(Modifier.height(6.dp))
 }
 
@@ -344,7 +344,7 @@ private fun Choice(
                 ),
         )
         Spacer(Modifier.size(8.dp))
-        Text(
+        TextMMD(
             text = label,
             fontSize = 15.sp,
             color = if (chosen) Color.White else Color.Black,

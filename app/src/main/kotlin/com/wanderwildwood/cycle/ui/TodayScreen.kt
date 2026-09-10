@@ -12,7 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Text
+import com.mudita.mmd.components.text.TextMMD
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -67,7 +67,7 @@ fun TodayScreen(
         // mark: the mark is placed on top of the row rather than in it, so adding it moved
         // nothing that was already there.
         Box(modifier = Modifier.fillMaxWidth()) {
-            Text(
+            TextMMD(
                 text = today.format(DayAndMonth),
                 fontSize = 15.sp,
                 fontWeight = FontWeight.Normal,
@@ -87,7 +87,7 @@ fun TodayScreen(
         val awaiting = awaitingConfirmation(forecast, today, bleedingToday)
 
         val headline = headline(today, bleedingToday, awaiting, forecast)
-        Text(
+        TextMMD(
             text = headline.first,
             fontSize = 44.sp,
             textAlign = TextAlign.Center,
@@ -95,7 +95,7 @@ fun TodayScreen(
         )
         headline.second?.let {
             Spacer(Modifier.height(8.dp))
-            Text(text = it, fontSize = 17.sp, fontWeight = FontWeight.Normal)
+            TextMMD(text = it, fontSize = 17.sp, fontWeight = FontWeight.Normal)
         }
 
         Spacer(Modifier.height(40.dp))
@@ -145,7 +145,7 @@ fun TodayScreen(
 
         // Quiet, and only worth saying once there is something behind it.
         if (!forecast.estimated) {
-            Text(
+            TextMMD(
                 text = "Cycle ${span(forecast.cycleLength, forecast.cycleRange)} · " +
                     "period ${span(forecast.periodLength, forecast.periodRange)}",
                 fontSize = 13.sp,
@@ -158,7 +158,7 @@ fun TodayScreen(
         // bordered box: a fourth one would crowd the count, which is what you came here for.
         if (offerBackup) {
             Spacer(Modifier.height(12.dp))
-            Text(
+            TextMMD(
                 text = "Back up\u2026",
                 fontSize = 13.sp,
                 fontWeight = FontWeight.Normal,
@@ -229,7 +229,7 @@ private fun headline(
  */
 @Composable
 private fun Action(label: String, onClick: () -> Unit) {
-    Text(
+    TextMMD(
         text = label,
         fontSize = 17.sp,
         textAlign = TextAlign.Center,

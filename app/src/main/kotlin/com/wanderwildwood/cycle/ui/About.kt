@@ -12,7 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import com.mudita.mmd.components.text.TextMMD
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Alignment
@@ -60,7 +60,7 @@ fun AboutDialog(onDismiss: () -> Unit) {
                 .fillMaxWidth(),
         ) {
             Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 20.dp)) {
-                Text(text = "Cycle ${BuildConfig.VERSION_NAME}", fontSize = 20.sp)
+                TextMMD(text = "Cycle ${BuildConfig.VERSION_NAME}", fontSize = 20.sp)
 
                 Spacer(Modifier.height(14.dp))
                 Line("No permissions. No network. What you record stays on this phone.")
@@ -72,7 +72,7 @@ fun AboutDialog(onDismiss: () -> Unit) {
                 Line("github.com/wanderwildwood/cycle")
 
                 Spacer(Modifier.height(20.dp))
-                Text(
+                TextMMD(
                     text = "Close",
                     fontSize = 16.sp,
                     textAlign = TextAlign.Center,
@@ -89,7 +89,7 @@ fun AboutDialog(onDismiss: () -> Unit) {
 
 @Composable
 private fun Line(text: String, weight: FontWeight = FontWeight.Normal) {
-    Text(text = text, fontSize = 14.sp, fontWeight = weight)
+    TextMMD(text = text, fontSize = 14.sp, fontWeight = weight)
 }
 
 /**

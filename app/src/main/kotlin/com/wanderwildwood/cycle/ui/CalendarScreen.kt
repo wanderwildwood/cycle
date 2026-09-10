@@ -14,7 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Text
+import com.mudita.mmd.components.text.TextMMD
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -69,7 +69,7 @@ fun CalendarScreen(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Stepper("‹", onPreviousMonth)
-            Text(
+            TextMMD(
                 text = month.atDay(1).format(MonthAndYear),
                 fontSize = 19.sp,
                 textAlign = TextAlign.Center,
@@ -85,7 +85,7 @@ fun CalendarScreen(
 
         Row(Modifier.fillMaxWidth()) {
             weekdays.forEach { day ->
-                Text(
+                TextMMD(
                     text = day.getDisplayName(TextStyle.NARROW, Locale.getDefault()),
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Normal,
@@ -128,7 +128,7 @@ fun CalendarScreen(
 
         Spacer(Modifier.height(12.dp))
 
-        Text(
+        TextMMD(
             text = "Today",
             fontSize = 17.sp,
             textAlign = TextAlign.Center,
@@ -143,7 +143,7 @@ fun CalendarScreen(
 
 @Composable
 private fun Stepper(glyph: String, onClick: () -> Unit) {
-    Text(
+    TextMMD(
         text = glyph,
         fontSize = 26.sp,
         textAlign = TextAlign.Center,
@@ -183,7 +183,7 @@ private fun Day(
                 ),
             contentAlignment = Alignment.Center,
         ) {
-            Text(
+            TextMMD(
                 text = day.dayOfMonth.toString(),
                 fontSize = 14.sp,
                 color = if (isMarked) Color.White else Color.Black,
@@ -216,20 +216,20 @@ private fun Day(
 @Composable
 private fun Key() {
     Column(horizontalAlignment = Alignment.Start, modifier = Modifier.fillMaxWidth()) {
-        KeyRow(filled = true) { Text("Recorded", fontSize = 12.sp, fontWeight = FontWeight.Normal) }
-        KeyRow(filled = false) { Text("Expected", fontSize = 12.sp, fontWeight = FontWeight.Normal) }
+        KeyRow(filled = true) { TextMMD("Recorded", fontSize = 12.sp, fontWeight = FontWeight.Normal) }
+        KeyRow(filled = false) { TextMMD("Expected", fontSize = 12.sp, fontWeight = FontWeight.Normal) }
         Row(verticalAlignment = Alignment.CenterVertically) {
             Box(Modifier.size(18.dp), contentAlignment = Alignment.Center) {
                 Box(Modifier.size(width = 13.dp, height = 2.dp).background(Color.Black))
             }
             Spacer(Modifier.size(6.dp))
-            Text("Fertile", fontSize = 12.sp, fontWeight = FontWeight.Normal)
+            TextMMD("Fertile", fontSize = 12.sp, fontWeight = FontWeight.Normal)
             Spacer(Modifier.size(14.dp))
             Box(Modifier.size(18.dp), contentAlignment = Alignment.Center) {
                 Box(Modifier.size(5.dp).background(Color.Black, CircleShape))
             }
             Spacer(Modifier.size(6.dp))
-            Text("Ovulation", fontSize = 12.sp, fontWeight = FontWeight.Normal)
+            TextMMD("Ovulation", fontSize = 12.sp, fontWeight = FontWeight.Normal)
         }
     }
 }
