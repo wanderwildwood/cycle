@@ -1,11 +1,15 @@
 package com.wanderwildwood.cycle.ui
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -20,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -28,7 +33,10 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.window.DialogWindowProvider
+import androidx.compose.foundation.Image
+import androidx.compose.ui.res.painterResource
 import com.wanderwildwood.cycle.BuildConfig
+import com.wanderwildwood.cycle.R
 
 /**
  * What this is, what it does with what you tell it, and where the source lives.
@@ -71,6 +79,9 @@ fun AboutDialog(onDismiss: () -> Unit) {
                 Spacer(Modifier.height(14.dp))
                 Line("github.com/wanderwildwood/cycle")
 
+                Spacer(Modifier.height(18.dp))
+                Llama()
+
                 Spacer(Modifier.height(20.dp))
                 TextMMD(
                     text = "Close",
@@ -86,6 +97,44 @@ fun AboutDialog(onDismiss: () -> Unit) {
         }
     }
 }
+
+/**
+ * A llama at the foot of the About, which opens the page a donation goes to.
+ *
+ * Three words rather than an address, because the address was more weight than a llama is
+ * worth down here. They are a verb and an object, so what happens when you press them is not
+ * a surprise even though the page they open is not named.
+ *
+ * The Kompakt may have nothing registered for a web address at all, so the intent is allowed
+ * to fail quietly rather than take the dialog down with it.
+ */
+@Composable
+private fun Llama() {
+    val context = LocalContext.current
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable {
+                runCatching {
+                    context.startActivity(
+                        Intent(Intent.ACTION_VIEW, Uri.parse(DONATE)),
+                    )
+                }
+            }
+            .padding(vertical = 4.dp),
+    ) {
+        Image(
+            painter = painterResource(R.drawable.llama),
+            contentDescription = null,
+            modifier = Modifier.size(22.dp),
+        )
+        Spacer(Modifier.width(10.dp))
+        Line("Feed the llamas")
+    }
+}
+
+private const val DONATE = "https://hotspringsllamas.org/donate/"
 
 @Composable
 private fun Line(text: String, weight: FontWeight = FontWeight.Normal) {
