@@ -16,8 +16,8 @@ android {
     // The Kompakt runs 28; nothing here needs anything newer.
     minSdk = 28
     targetSdk = 36
-    versionCode = 6
-    versionName = "0.2.1"
+    versionCode = 7
+    versionName = "0.2.2"
   }
 
   // The real keystore in signing/ signs every build type, so the very first install
@@ -53,6 +53,14 @@ android {
       realSigningConfig?.let { signingConfig = it }
     }
     getByName("release") {
+      // The one thing that differs between a release built here and the one GitHub
+      // publishes: AGP stamps the git revision into META-INF, and the build box works
+      // from an rsync with no .git, so it writes NO_SUPPORTED_VCS_FOUND where the CI
+      // runner writes the commit. Off, so the two have identical contents.
+      vcsInfo {
+        include = false
+      }
+
       isMinifyEnabled = true
       isShrinkResources = true
       proguardFiles(
