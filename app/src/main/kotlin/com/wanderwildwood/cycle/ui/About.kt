@@ -2,6 +2,7 @@ package com.wanderwildwood.cycle.ui
 
 import android.content.Intent
 import android.net.Uri
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.border
@@ -116,10 +117,17 @@ private fun Llama() {
         modifier = Modifier
             .fillMaxWidth()
             .clickable {
+                // Straight to the checkout. The Donate button on the site only leads
+                // here anyway, so the page in between is a press the reader does not need.
+                // The short square.link form, not the long checkout.square.site address it
+                // redirects to -- the short one is what the site itself links to, so a
+                // regenerated checkout follows it and a published app does not break.
                 runCatching {
                     context.startActivity(
                         Intent(Intent.ACTION_VIEW, Uri.parse(DONATE)),
                     )
+                }.onFailure {
+                    Toast.makeText(context, "There is no browser on this phone to open that with.", Toast.LENGTH_SHORT).show()
                 }
             }
             .padding(vertical = 4.dp),
@@ -134,7 +142,7 @@ private fun Llama() {
     }
 }
 
-private const val DONATE = "https://hotspringsllamas.org/donate/"
+private const val DONATE = "https://square.link/u/AGu8oT10"
 
 @Composable
 private fun Line(text: String, weight: FontWeight = FontWeight.Normal) {
