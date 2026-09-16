@@ -3,7 +3,6 @@ package com.wanderwildwood.cycle.ui
 import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -16,24 +15,18 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Surface
 import com.mudita.mmd.components.text.TextMMD
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
-import androidx.compose.ui.window.DialogWindowProvider
 import androidx.compose.foundation.Image
 import androidx.compose.ui.res.painterResource
 import com.wanderwildwood.cycle.BuildConfig
@@ -49,53 +42,32 @@ import com.wanderwildwood.cycle.R
  */
 @Composable
 fun AboutDialog(onDismiss: () -> Unit) {
-    Dialog(
-        onDismissRequest = onDismiss,
-        properties = DialogProperties(usePlatformDefaultWidth = false),
-    ) {
-        // The stock dialog dims the window behind it. On the panel that is not a shadow but a
-        // screenful of dithered grey, repainted on the way in and again on the way out.
-        val view = LocalView.current
-        SideEffect {
-            (view.parent as? DialogWindowProvider)?.window?.setDimAmount(0f)
-        }
+    EInkDialog(onDismiss = onDismiss) {
+        TextMMD(text = "Cycle ${BuildConfig.VERSION_NAME}", fontSize = 20.sp)
 
-        Surface(
-            color = Color.White,
-            contentColor = Color.Black,
-            border = BorderStroke(1.dp, Color.Black),
+        Spacer(Modifier.height(14.dp))
+        Line("No permissions. No network. What you record stays on this phone.")
+
+        Spacer(Modifier.height(14.dp))
+        Line("GNU General Public License v3")
+
+        Spacer(Modifier.height(14.dp))
+        Line("github.com/wanderwildwood/cycle")
+
+        Spacer(Modifier.height(18.dp))
+        Llama()
+
+        Spacer(Modifier.height(20.dp))
+        TextMMD(
+            text = "Close",
+            fontSize = 16.sp,
+            textAlign = TextAlign.Center,
             modifier = Modifier
-                .padding(horizontal = 20.dp)
-                .fillMaxWidth(),
-        ) {
-            Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 20.dp)) {
-                TextMMD(text = "Cycle ${BuildConfig.VERSION_NAME}", fontSize = 20.sp)
-
-                Spacer(Modifier.height(14.dp))
-                Line("No permissions. No network. What you record stays on this phone.")
-
-                Spacer(Modifier.height(14.dp))
-                Line("GNU General Public License v3")
-
-                Spacer(Modifier.height(14.dp))
-                Line("github.com/wanderwildwood/cycle")
-
-                Spacer(Modifier.height(18.dp))
-                Llama()
-
-                Spacer(Modifier.height(20.dp))
-                TextMMD(
-                    text = "Close",
-                    fontSize = 16.sp,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .border(1.dp, Color.Black)
-                        .clickable(onClick = onDismiss)
-                        .padding(vertical = 12.dp),
-                )
-            }
-        }
+                .fillMaxWidth()
+                .border(1.dp, Color.Black)
+                .clickable(onClick = onDismiss)
+                .padding(vertical = 12.dp),
+        )
     }
 }
 

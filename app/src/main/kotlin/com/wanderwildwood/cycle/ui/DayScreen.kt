@@ -15,12 +15,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
+import com.mudita.mmd.components.lazy.LazyColumnMMD
 import com.mudita.mmd.components.text.TextMMD
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -125,100 +124,106 @@ fun DayScreen(
 
         Spacer(Modifier.height(14.dp))
 
-        val scroll = rememberScrollState()
 
-        Column(
+        // MMD's list, not a scrolling Column: it steps four rows to a swipe and stops, and it
+        // brings the chevron rail at both ends. A screen that coasts was the one screen in
+        // the app that did not behave like the phone it is on.
+        LazyColumnMMD(
             modifier = Modifier
-                .weight(1f)
-                .verticalScroll(scroll),
+                .weight(1f),
         ) {
-            // A day that has not happened yet is not yours to record, the same rule the calendar
-            // already applies. You can still write a note against it.
-            if (day <= today) {
-                Choice(
-                    label = if (isBleeding) "Bleeding" else "Not bleeding",
-                    chosen = isBleeding,
-                    onClick = { onSetBleeding(!isBleeding) },
-                    modifier = Modifier.fillMaxWidth(),
-                )
+            item {
+                // A day that has not happened yet is not yours to record, the same rule the calendar
+                // already applies. You can still write a note against it.
+                if (day <= today) {
+                    Choice(
+                        label = if (isBleeding) "Bleeding" else "Not bleeding",
+                        chosen = isBleeding,
+                        onClick = { onSetBleeding(!isBleeding) },
+                        modifier = Modifier.fillMaxWidth(),
+                    )
 
-                if (isBleeding) {
-                    Spacer(Modifier.height(8.dp))
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        INTENSITIES.forEachIndexed { index, name ->
-                            Choice(
-                                label = name,
-                                chosen = intensity == index + 1,
-                                onClick = { onSetIntensity(index + 1) },
-                                modifier = Modifier.weight(1f),
-                            )
+                    if (isBleeding) {
+                        Spacer(Modifier.height(8.dp))
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            INTENSITIES.forEachIndexed { index, name ->
+                                Choice(
+                                    label = name,
+                                    chosen = intensity == index + 1,
+                                    onClick = { onSetIntensity(index + 1) },
+                                    modifier = Modifier.weight(1f),
+                                )
+                            }
                         }
                     }
-                }
 
+                    Spacer(Modifier.height(18.dp))
+                }
+            }
+            item {
+                Heading("Mood")
+            }
+            item {
+                Tags(
+                    vocabulary = MOODS,
+                    chosen = moods,
+                    onToggle = { tag -> moods = if (tag in moods) moods - tag else moods + tag },
+                    onAdd = { tag -> moods = moods + tag },
+                )
+            }
+            item {
                 Spacer(Modifier.height(18.dp))
             }
-
-            Heading("Mood")
-            Tags(
-                vocabulary = MOODS,
-                chosen = moods,
-                onToggle = { tag -> moods = if (tag in moods) moods - tag else moods + tag },
-                onAdd = { tag -> moods = moods + tag },
-            )
-
-            Spacer(Modifier.height(18.dp))
-
-            Heading("Symptoms")
-            Tags(
-                vocabulary = SYMPTOMS,
-                chosen = symptoms,
-                onToggle = { tag -> symptoms = if (tag in symptoms) symptoms - tag else symptoms + tag },
-                onAdd = { tag -> symptoms = symptoms + tag },
-            )
-
-            Spacer(Modifier.height(18.dp))
-
-            Choice(
-                label = "Intimacy",
-                chosen = intimacy,
-                onClick = { intimacy = !intimacy },
-                modifier = Modifier.fillMaxWidth(),
-            )
-
-            Spacer(Modifier.height(18.dp))
-
-            Heading("Note")
-            BasicTextField(
-                value = note,
-                onValueChange = { note = it },
-                textStyle = TextStyle(fontSize = 15.sp, color = Color.Black),
-                cursorBrush = SolidColor(Color.Black),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(min = 96.dp)
-                    .border(1.dp, Color.Black)
-                    .padding(10.dp),
-            )
-
-            Spacer(Modifier.height(16.dp))
+            item {
+                Heading("Symptoms")
+            }
+            item {
+                Tags(
+                    vocabulary = SYMPTOMS,
+                    chosen = symptoms,
+                    onToggle = { tag -> symptoms = if (tag in symptoms) symptoms - tag else symptoms + tag },
+                    onAdd = { tag -> symptoms = symptoms + tag },
+                )
+            }
+            item {
+                Spacer(Modifier.height(18.dp))
+            }
+            item {
+                Choice(
+                    label = "Intimacy",
+                    chosen = intimacy,
+                    onClick = { intimacy = !intimacy },
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
+            item {
+                Spacer(Modifier.height(18.dp))
+            }
+            item {
+                Heading("Note")
+            }
+            item {
+                BasicTextField(
+                    value = note,
+                    onValueChange = { note = it },
+                    textStyle = TextStyle(fontSize = 15.sp, color = Color.Black),
+                    cursorBrush = SolidColor(Color.Black),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(min = 96.dp)
+                        .border(1.dp, Color.Black)
+                        .padding(10.dp),
+                )
+            }
+            item {
+                Spacer(Modifier.height(16.dp))
+            }
         }
 
-        // The panel draws no scrollbar and no overscroll, so a fold that lands between two rows
-        // of chips reads as the end of the screen — on a bleeding day it cut exactly below the
-        // second symptom row, leaving intimacy and the whole note field undiscoverable, with any
-        // imported notes among them. Driven off the scroll state rather than a spacing tweak
-        // because it stays right whatever the vocabulary and whatever the day is carrying.
-        if (scroll.canScrollForward) {
-            TextMMD(
-                text = "\u25BE",
-                fontSize = 13.sp,
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 6.dp),
-            )
-        }
+        // The hand-drawn ▾ that used to sit here, driven off `scroll.canScrollForward`,
+        // is gone: MMD's list draws its own rail — a chevron at each end, dotted where
+        // there is nowhere further to go and filled where there is — which is both a
+        // better answer to the same problem and the one the rest of the phone gives.
 
         TextMMD(
             text = "Done",
