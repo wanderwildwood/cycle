@@ -19,6 +19,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.MaterialTheme
 import com.mudita.mmd.components.lazy.LazyColumnMMD
 import com.mudita.mmd.components.text.TextMMD
 import androidx.compose.runtime.Composable
@@ -32,11 +33,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.wanderwildwood.cycle.data.DayNote
 import com.wanderwildwood.cycle.data.cleanTag
 import com.wanderwildwood.cycle.data.tagString
@@ -117,7 +116,7 @@ fun DayScreen(
     ) {
         TextMMD(
             text = day.format(DayHeading),
-            fontSize = 17.sp,
+            style = MaterialTheme.typography.bodyMedium,
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth(),
         )
@@ -206,7 +205,7 @@ fun DayScreen(
                 BasicTextField(
                     value = note,
                     onValueChange = { note = it },
-                    textStyle = TextStyle(fontSize = 15.sp, color = Color.Black),
+                    textStyle = MaterialTheme.typography.bodySmall.copy(color = Color.Black),
                     cursorBrush = SolidColor(Color.Black),
                     modifier = Modifier
                         .fillMaxWidth()
@@ -227,7 +226,7 @@ fun DayScreen(
 
         TextMMD(
             text = "Done",
-            fontSize = 17.sp,
+            style = MaterialTheme.typography.bodyMedium,
             textAlign = TextAlign.Center,
             modifier = Modifier
                 .fillMaxWidth()
@@ -240,7 +239,7 @@ fun DayScreen(
 
 @Composable
 private fun Heading(text: String) {
-    TextMMD(text = text, fontSize = 13.sp)
+    TextMMD(text = text, style = MaterialTheme.typography.labelSmall)
     Spacer(Modifier.height(6.dp))
 }
 
@@ -299,7 +298,7 @@ private fun Tags(
                 value = typed,
                 onValueChange = { typed = it },
                 singleLine = true,
-                textStyle = TextStyle(fontSize = 15.sp, color = Color.Black),
+                textStyle = MaterialTheme.typography.bodySmall.copy(color = Color.Black),
                 cursorBrush = SolidColor(Color.Black),
                 // Enter commits, so the common case never needs the button beside it.
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
@@ -351,7 +350,7 @@ private fun Choice(
         Spacer(Modifier.size(8.dp))
         TextMMD(
             text = label,
-            fontSize = 15.sp,
+            style = MaterialTheme.typography.bodySmall,
             color = if (chosen) Color.White else Color.Black,
         )
     }

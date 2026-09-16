@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.MaterialTheme
 import com.mudita.mmd.components.text.TextMMD
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -22,7 +23,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.wanderwildwood.cycle.cycle.Forecast
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -71,7 +71,7 @@ fun CalendarScreen(
             Stepper("‹", onPreviousMonth)
             TextMMD(
                 text = month.atDay(1).format(MonthAndYear),
-                fontSize = 19.sp,
+                style = MaterialTheme.typography.bodyLarge,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.weight(1f),
             )
@@ -87,7 +87,7 @@ fun CalendarScreen(
             weekdays.forEach { day ->
                 TextMMD(
                     text = day.getDisplayName(TextStyle.NARROW, Locale.getDefault()),
-                    fontSize = 12.sp,
+                    style = MaterialTheme.typography.labelSmall,
                     fontWeight = FontWeight.Normal,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.weight(1f),
@@ -130,7 +130,7 @@ fun CalendarScreen(
 
         TextMMD(
             text = "Today",
-            fontSize = 17.sp,
+            style = MaterialTheme.typography.bodyMedium,
             textAlign = TextAlign.Center,
             modifier = Modifier
                 .fillMaxWidth()
@@ -145,7 +145,7 @@ fun CalendarScreen(
 private fun Stepper(glyph: String, onClick: () -> Unit) {
     TextMMD(
         text = glyph,
-        fontSize = 26.sp,
+        style = MaterialTheme.typography.headlineLarge,
         textAlign = TextAlign.Center,
         modifier = Modifier
             .size(44.dp)
@@ -185,7 +185,7 @@ private fun Day(
         ) {
             TextMMD(
                 text = day.dayOfMonth.toString(),
-                fontSize = 14.sp,
+                style = MaterialTheme.typography.labelSmall,
                 color = if (isMarked) Color.White else Color.Black,
             )
         }
@@ -216,20 +216,20 @@ private fun Day(
 @Composable
 private fun Key() {
     Column(horizontalAlignment = Alignment.Start, modifier = Modifier.fillMaxWidth()) {
-        KeyRow(filled = true) { TextMMD("Recorded", fontSize = 12.sp, fontWeight = FontWeight.Normal) }
-        KeyRow(filled = false) { TextMMD("Expected", fontSize = 12.sp, fontWeight = FontWeight.Normal) }
+        KeyRow(filled = true) { TextMMD("Recorded", style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Normal) }
+        KeyRow(filled = false) { TextMMD("Expected", style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Normal) }
         Row(verticalAlignment = Alignment.CenterVertically) {
             Box(Modifier.size(18.dp), contentAlignment = Alignment.Center) {
                 Box(Modifier.size(width = 13.dp, height = 2.dp).background(Color.Black))
             }
             Spacer(Modifier.size(6.dp))
-            TextMMD("Fertile", fontSize = 12.sp, fontWeight = FontWeight.Normal)
+            TextMMD("Fertile", style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Normal)
             Spacer(Modifier.size(14.dp))
             Box(Modifier.size(18.dp), contentAlignment = Alignment.Center) {
                 Box(Modifier.size(5.dp).background(Color.Black, CircleShape))
             }
             Spacer(Modifier.size(6.dp))
-            TextMMD("Ovulation", fontSize = 12.sp, fontWeight = FontWeight.Normal)
+            TextMMD("Ovulation", style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Normal)
         }
     }
 }

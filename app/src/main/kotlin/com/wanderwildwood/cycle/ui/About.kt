@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.MaterialTheme
 import com.mudita.mmd.components.text.TextMMD
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -26,7 +27,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.Image
 import androidx.compose.ui.res.painterResource
 import com.wanderwildwood.cycle.BuildConfig
@@ -43,7 +43,7 @@ import com.wanderwildwood.cycle.R
 @Composable
 fun AboutDialog(onDismiss: () -> Unit) {
     EInkDialog(onDismiss = onDismiss) {
-        TextMMD(text = "Cycle ${BuildConfig.VERSION_NAME}", fontSize = 20.sp)
+        TextMMD(text = "Cycle ${BuildConfig.VERSION_NAME}", style = MaterialTheme.typography.bodyLarge)
 
         Spacer(Modifier.height(14.dp))
         Line("No permissions. No network. What you record stays on this phone.")
@@ -60,7 +60,7 @@ fun AboutDialog(onDismiss: () -> Unit) {
         Spacer(Modifier.height(20.dp))
         TextMMD(
             text = "Close",
-            fontSize = 16.sp,
+            style = MaterialTheme.typography.titleSmall,
             textAlign = TextAlign.Center,
             modifier = Modifier
                 .fillMaxWidth()
@@ -118,7 +118,7 @@ private const val DONATE = "https://square.link/u/AGu8oT10"
 
 @Composable
 private fun Line(text: String, weight: FontWeight = FontWeight.Normal) {
-    TextMMD(text = text, fontSize = 14.sp, fontWeight = weight)
+    TextMMD(text = text, style = MaterialTheme.typography.labelSmall, fontWeight = weight)
 }
 
 /**

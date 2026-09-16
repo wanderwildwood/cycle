@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import com.mudita.mmd.components.text.TextMMD
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -69,7 +70,7 @@ fun TodayScreen(
         Box(modifier = Modifier.fillMaxWidth()) {
             TextMMD(
                 text = today.format(DayAndMonth),
-                fontSize = 15.sp,
+                style = MaterialTheme.typography.bodySmall,
                 fontWeight = FontWeight.Normal,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth().align(Alignment.Center),
@@ -95,7 +96,7 @@ fun TodayScreen(
         )
         headline.second?.let {
             Spacer(Modifier.height(8.dp))
-            TextMMD(text = it, fontSize = 17.sp, fontWeight = FontWeight.Normal)
+            TextMMD(text = it, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Normal)
         }
 
         Spacer(Modifier.height(40.dp))
@@ -148,7 +149,7 @@ fun TodayScreen(
             TextMMD(
                 text = "Cycle ${span(forecast.cycleLength, forecast.cycleRange)} · " +
                     "period ${span(forecast.periodLength, forecast.periodRange)}",
-                fontSize = 13.sp,
+                style = MaterialTheme.typography.labelSmall,
                 fontWeight = FontWeight.Normal,
             )
         }
@@ -160,7 +161,7 @@ fun TodayScreen(
             Spacer(Modifier.height(12.dp))
             TextMMD(
                 text = "Back up\u2026",
-                fontSize = 13.sp,
+                style = MaterialTheme.typography.labelSmall,
                 fontWeight = FontWeight.Normal,
                 modifier = Modifier
                     .clickable(onClick = onBackUp)
@@ -231,7 +232,7 @@ private fun headline(
 private fun Action(label: String, onClick: () -> Unit) {
     TextMMD(
         text = label,
-        fontSize = 17.sp,
+        style = MaterialTheme.typography.bodyMedium,
         textAlign = TextAlign.Center,
         modifier = Modifier
             .fillMaxWidth()
