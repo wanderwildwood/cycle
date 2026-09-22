@@ -51,6 +51,40 @@
     <string name="today_later_than_expected">later than expected</string>
 
     <!-- ============================================================ -->
+    <!-- The one line "Send to…" sends: written in the first person, to a partner -->
+
+    <!-- %1$d is the day of the current period -->
+    <string name="summary_day_of_period">Day %1$d of my period.</string>
+    <!-- Mid-period, today not yet marked. %1$s is a weekday and date, e.g. "Wednesday 14 April" -->
+    <string name="summary_started">Period started %1$s.</string>
+    <string name="summary_nothing_yet">Nothing recorded yet.</string>
+    <!-- Every "expected" line says "expected", never "due", and a passed date is "later than
+         expected", never "late": the date is an estimate, and when it misses, the estimate was wrong.
+         Each has a _rough twin, used while there is not enough history yet for her own numbers. -->
+    <!-- Only used for two days or more. %1$s is a weekday and date, e.g. "Wednesday 14 April"; %2$d is the number of days -->
+    <plurals name="summary_expected_in">
+        <item quantity="one">Period expected %1$s, %2$d day away.</item>
+        <item quantity="other">Period expected %1$s, %2$d days away.</item>
+    </plurals>
+    <plurals name="summary_expected_in_rough">
+        <item quantity="one">Period expected %1$s, %2$d day away (rough — not enough history yet).</item>
+        <item quantity="other">Period expected %1$s, %2$d days away (rough — not enough history yet).</item>
+    </plurals>
+    <string name="summary_expected_tomorrow">Period expected tomorrow.</string>
+    <string name="summary_expected_tomorrow_rough">Period expected tomorrow (rough — not enough history yet).</string>
+    <string name="summary_expected_today">Period expected today.</string>
+    <string name="summary_expected_today_rough">Period expected today (rough — not enough history yet).</string>
+    <!-- %1$d is how many days past the expected date -->
+    <plurals name="summary_later">
+        <item quantity="one">Period is %1$d day later than expected.</item>
+        <item quantity="other">Period is %1$d days later than expected.</item>
+    </plurals>
+    <plurals name="summary_later_rough">
+        <item quantity="one">Period is %1$d day later than expected (rough — not enough history yet).</item>
+        <item quantity="other">Period is %1$d days later than expected (rough — not enough history yet).</item>
+    </plurals>
+
+    <!-- ============================================================ -->
     <!-- Calendar -->
 
     <!-- The button back to the today screen -->
@@ -76,6 +110,30 @@
     <!-- Section heading (noun) -->
     <string name="day_heading_mood">Mood</string>
     <string name="day_heading_symptoms">Symptoms</string>
+    <!-- The offered mood words, each a toggle on the day. Short: a word has to fit a chip on a
+         small screen. What is saved is the English word, so a translation here never changes a
+         saved day. -->
+    <string name="day_mood_happy">Happy</string>
+    <string name="day_mood_calm">Calm</string>
+    <string name="day_mood_tired">Tired</string>
+    <!-- Low in mood -->
+    <string name="day_mood_low">Low</string>
+    <string name="day_mood_anxious">Anxious</string>
+    <string name="day_mood_irritable">Irritable</string>
+    <string name="day_mood_energetic">Energetic</string>
+    <!-- The offered symptom words, the same way as the moods -->
+    <string name="day_symptom_cramps">Cramps</string>
+    <string name="day_symptom_headache">Headache</string>
+    <string name="day_symptom_backache">Backache</string>
+    <string name="day_symptom_bloating">Bloating</string>
+    <!-- Sore to the touch, as breasts can be before a period -->
+    <string name="day_symptom_tender">Tender</string>
+    <string name="day_symptom_nausea">Nausea</string>
+    <string name="day_symptom_acne">Acne</string>
+    <!-- Food cravings -->
+    <string name="day_symptom_cravings">Cravings</string>
+    <!-- Restless, unable to settle -->
+    <string name="day_symptom_restless">Restless</string>
     <!-- A toggle: sex on this day -->
     <string name="day_intimacy">Intimacy</string>
     <!-- Section heading (noun) -->

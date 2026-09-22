@@ -1,28 +1,45 @@
 package com.wanderwildwood.cycle.cycle
 
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import java.util.Locale
-
-private val DayAndDate = DateTimeFormatter.ofPattern("EEEE d MMMM", Locale.getDefault())
 
 /**
- * The line you send a partner.
+ * The line you send a partner, decided but not yet worded.
  *
  * One sentence, and only the part a partner has any use for: where you are now and when the next
  * one is due. Not the history, not the notes, not the symptoms — those are yours, and a share
- * feature that quietly includes them is a share feature nobody can use carefully.
+ * feature that quietly includes them is a share feature nobody can use carefully. Nothing here
+ * has a field that could hold them.
+ *
+ * The words come from strings.xml, in the reader's language, at the one place that sends it.
  */
+sealed interface Summary {
+    /** Today is marked: this is [day] of the period. */
+    data class Bleeding(val day: Int) : Summary
+
+    /** Mid-period with today not yet confirmed: only the start, on [on], is said. */
+    data class Started(val on: LocalDate) : Summary
+
+    /** No period recorded, so nothing to count from. */
+    data object NothingYet : Summary
+
+    /**
+     * The next period is expected on [on], [days] from today; negative once that date has passed.
+     *
+     * [rough] while the numbers are still the defaults rather than hers.
+     */
+    data class Expected(val on: LocalDate, val days: Int, val rough: Boolean) : Summary
+}
+
+/** What to tell a partner today. See [Summary]. */
 fun summary(
     today: LocalDate,
     bleedingToday: Boolean,
     forecast: Forecast,
-): String {
+): Summary {
     val current = forecast.periods.lastOrNull()
 
     if (bleedingToday && current != null) {
-        val day = dayOfPeriod(forecast, today) ?: 1
-        return "Day $day of my period."
+        return Summary.Bleeding(dayOfPeriod(forecast, today) ?: 1)
     }
 
     // Mid-period with today not yet confirmed. The countdown below is measured from a period that
@@ -30,30 +47,14 @@ fun summary(
     // "day two" is not a partner's to be told while you have not said it yourself. The start is the
     // part that is recorded, so the start is the part that gets sent.
     if (current != null && awaitingConfirmation(forecast, today, bleedingToday)) {
-        return "Period started ${current.start.format(DayAndDate)}."
+        return Summary.Started(current.start)
     }
 
-    val next = forecast.nextStart ?: return "Nothing recorded yet."
-    val until = forecast.daysUntilNextStart ?: return "Nothing recorded yet."
+    val next = forecast.nextStart ?: return Summary.NothingYet
+    val until = forecast.daysUntilNextStart ?: return Summary.NothingYet
 
     // Said only while the numbers are still the defaults rather than hers. It means "there is
-    // not enough history yet", which stops being true — unlike the uncertainty below, which
-    // does not. Two different admissions; making this one permanent would blur both.
-    val estimate = if (forecast.estimated) " (rough — not enough history yet)" else ""
-
-    // "Expected", not "due", and "later than expected", not "late".
-    //
-    // A date worked out from the median of three cycles is a guess, and it stays a guess after
-    // thirty of them: more history makes it better, never certain. "Due" is the language of a
-    // timetable, and against a timetable a body that arrives on its own schedule is at fault —
-    // so the app was quietly reporting a failure of hers whenever its own arithmetic missed.
-    // The estimate is the thing that was wrong. This says so, in the same breath and no more
-    // words than before.
-    return when {
-        until > 1 -> "Period expected ${next.format(DayAndDate)}, $until days away$estimate."
-        until == 1 -> "Period expected tomorrow$estimate."
-        until == 0 -> "Period expected today$estimate."
-        until == -1 -> "Period is 1 day later than expected$estimate."
-        else -> "Period is ${-until} days later than expected$estimate."
-    }
+    // not enough history yet", which stops being true — unlike the uncertainty in "expected",
+    // which does not. Two different admissions; making this one permanent would blur both.
+    return Summary.Expected(next, until, rough = forecast.estimated)
 }

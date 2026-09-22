@@ -56,11 +56,34 @@ private val DayHeading = DateTimeFormatter.ofPattern("EEEE d MMMM yyyy", Locale.
  * not a considered vocabulary — they were chosen without anyone who has to use them, and
  * [tagString] keeps whatever is already recorded even after the lists change, so they can be
  * replaced once someone has lived with them.
+ *
+ * These English words are what gets stored and what saved days are matched against, so they stay
+ * exactly as they are in every language. What is shown is [TAG_WORDS].
  */
 val MOODS = listOf("Happy", "Calm", "Tired", "Low", "Anxious", "Irritable", "Energetic")
 
 val SYMPTOMS = listOf(
     "Cramps", "Headache", "Backache", "Bloating", "Tender", "Nausea", "Acne", "Cravings", "Restless",
+)
+
+/** How each offered word is shown, by the stored word. A word of your own is shown as you typed it. */
+private val TAG_WORDS = mapOf(
+    "Happy" to R.string.day_mood_happy,
+    "Calm" to R.string.day_mood_calm,
+    "Tired" to R.string.day_mood_tired,
+    "Low" to R.string.day_mood_low,
+    "Anxious" to R.string.day_mood_anxious,
+    "Irritable" to R.string.day_mood_irritable,
+    "Energetic" to R.string.day_mood_energetic,
+    "Cramps" to R.string.day_symptom_cramps,
+    "Headache" to R.string.day_symptom_headache,
+    "Backache" to R.string.day_symptom_backache,
+    "Bloating" to R.string.day_symptom_bloating,
+    "Tender" to R.string.day_symptom_tender,
+    "Nausea" to R.string.day_symptom_nausea,
+    "Acne" to R.string.day_symptom_acne,
+    "Cravings" to R.string.day_symptom_cravings,
+    "Restless" to R.string.day_symptom_restless,
 )
 
 /** What the three intensity buttons say, in order; the stored value is the index plus one. */
@@ -272,7 +295,8 @@ private fun Tags(
         modifier = Modifier.fillMaxWidth(),
     ) {
         vocabulary.forEach { tag ->
-            Choice(label = tag, chosen = tag in chosen, onClick = { onToggle(tag) })
+            val label = TAG_WORDS[tag]?.let { stringResource(it) } ?: tag
+            Choice(label = label, chosen = tag in chosen, onClick = { onToggle(tag) })
         }
         ownWords.forEach { tag ->
             Choice(label = tag, chosen = true, onClick = { onToggle(tag) })

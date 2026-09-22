@@ -1,5 +1,6 @@
 package com.wanderwildwood.cycle
 
+import com.wanderwildwood.cycle.cycle.Summary
 import com.wanderwildwood.cycle.cycle.awaitingConfirmation
 import com.wanderwildwood.cycle.cycle.dayOfPeriod
 import com.wanderwildwood.cycle.cycle.forecast
@@ -65,13 +66,13 @@ class ConfirmationTest {
         // The old behaviour here read "Period due ..., 26 days away" on day two of a period.
         val today = LocalDate.parse("2021-03-05")
         val line = summary(today, bleedingToday = false, forecast = at("2021-03-05"))
-        assertEquals("Period started Thursday 4 March.", line)
+        assertEquals(Summary.Started(on = LocalDate.parse("2021-03-04")), line)
     }
 
     @Test fun `the sent line goes back to the countdown once the period has ended`() {
         val today = LocalDate.parse("2021-03-07")
         val line = summary(today, bleedingToday = false, forecast = at("2021-03-07"))
-        assertTrue(line, line.startsWith("Period expected"))
+        assertTrue(line.toString(), line is Summary.Expected)
     }
 
     @Test fun `confirming a day two days later keeps it one period`() {

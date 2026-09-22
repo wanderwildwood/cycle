@@ -1,6 +1,7 @@
 package com.wanderwildwood.cycle
 
 import android.content.Intent
+import android.content.res.Resources
 import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -18,6 +19,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import com.wanderwildwood.cycle.cycle.Summary
 import com.wanderwildwood.cycle.cycle.forecast
 import com.wanderwildwood.cycle.cycle.summary
 import com.wanderwildwood.cycle.data.CycleDatabase
@@ -37,6 +39,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
 import java.time.YearMonth
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 /**
  * Writes that have to finish even though the screen asking for them is going away.
@@ -167,7 +171,7 @@ private fun App() {
             // whichever channel you already trust, and only if you pick something.
             val send = Intent(Intent.ACTION_SEND).apply {
                 type = "text/plain"
-                putExtra(Intent.EXTRA_TEXT, summary(today, bleedingToday, outlook))
+                putExtra(Intent.EXTRA_TEXT, summary(today, bleedingToday, outlook).words(context.resources))
             }
             context.startActivity(Intent.createChooser(send, null))
         },
@@ -179,6 +183,42 @@ private fun App() {
 
 /** Marked without saying how heavy, which is most of them. */
 private const val DEFAULT_INTENSITY = 2
+
+private val DayAndDate = DateTimeFormatter.ofPattern("EEEE d MMMM", Locale.getDefault())
+
+/**
+ * The line that goes out through "Send to…", in the reader's language.
+ *
+ * "Expected", not "due", and "later than expected", not "late".
+ *
+ * A date worked out from the median of three cycles is a guess, and it stays a guess after
+ * thirty of them: more history makes it better, never certain. "Due" is the language of a
+ * timetable, and against a timetable a body that arrives on its own schedule is at fault —
+ * so the app was quietly reporting a failure of hers whenever its own arithmetic missed.
+ * The estimate is the thing that was wrong. This says so, in the same breath and no more
+ * words than before.
+ */
+private fun Summary.words(resources: Resources): String = when (this) {
+    is Summary.Bleeding -> resources.getString(R.string.summary_day_of_period, day)
+    is Summary.Started -> resources.getString(R.string.summary_started, on.format(DayAndDate))
+    Summary.NothingYet -> resources.getString(R.string.summary_nothing_yet)
+    is Summary.Expected -> when {
+        days > 1 -> resources.getQuantityString(
+            if (rough) R.plurals.summary_expected_in_rough else R.plurals.summary_expected_in,
+            days, on.format(DayAndDate), days,
+        )
+        days == 1 -> resources.getString(
+            if (rough) R.string.summary_expected_tomorrow_rough else R.string.summary_expected_tomorrow,
+        )
+        days == 0 -> resources.getString(
+            if (rough) R.string.summary_expected_today_rough else R.string.summary_expected_today,
+        )
+        else -> resources.getQuantityString(
+            if (rough) R.plurals.summary_later_rough else R.plurals.summary_later,
+            -days, -days,
+        )
+    }
+}
 
 /**
  * Wait for the day's note before drawing the screen.
