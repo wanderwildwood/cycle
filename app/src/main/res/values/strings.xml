@@ -2,4 +2,100 @@
 <resources>
     <!-- What shows under the icon. Changing this is a one-line change; the applicationId is not. -->
     <string name="app_name">Cycle</string>
+
+    <!-- ============================================================ -->
+    <!-- Today screen -->
+
+    <!-- The main button. "Undo" unmarks today only; it does not end the period -->
+    <string name="today_undo">Undo</string>
+    <!-- The main button mid-period: confirm that today is a bleeding day -->
+    <string name="today_bleeding_today">Bleeding today</string>
+    <!-- The main button otherwise: mark today as the first day of a period -->
+    <string name="today_period_started">Period started</string>
+    <!-- Opens the calendar (noun as a button) -->
+    <string name="today_calendar">Calendar</string>
+    <!-- Opens the system share sheet to send a one-line summary -->
+    <string name="today_send_to">Send to…</string>
+    <string name="today_import_history">Import history</string>
+    <!-- Opens the save dialog for a backup file (verb) -->
+    <string name="today_back_up">Back up…</string>
+    <!-- The quiet line near the foot: %1$s and %2$s are lengths such as "29 days" or "27–31 days" -->
+    <string name="today_cycle_and_period">Cycle %1$s · period %2$s</string>
+    <!-- A length that did not vary; %1$d is the number of days -->
+    <string name="today_span_days">%1$d days</string>
+    <!-- A length as a range, e.g. 27–31 days -->
+    <string name="today_span_range_days">%1$d–%2$d days</string>
+
+    <!-- The big count and the line under it -->
+    <!-- %1$d is the day of the current period, e.g. "Day 3" over "of your period" -->
+    <string name="today_day_n">Day %1$d</string>
+    <string name="today_of_your_period">of your period</string>
+    <!-- Under "Day N" when today has not been confirmed as a bleeding day -->
+    <string name="today_not_recorded_yet">not recorded yet</string>
+    <string name="today_no_history">No history yet</string>
+    <string name="today_mark_a_day">Mark a day to begin</string>
+    <!-- The count: days until the next period, or days past the expected date -->
+    <plurals name="today_days">
+        <item quantity="one">%d day</item>
+        <item quantity="other">%d days</item>
+    </plurals>
+    <!-- Under "N days": the period is N days away -->
+    <string name="today_until_your_period">until your period</string>
+    <!-- Big count when the period is expected tomorrow -->
+    <string name="today_tomorrow">Tomorrow</string>
+    <!-- Big count when the period is expected today -->
+    <string name="today_today">Today</string>
+    <!-- Under "Tomorrow" or "Today" -->
+    <string name="today_period_expected">your period is expected</string>
+    <!-- Under "N days" once the expected date has passed; deliberately not "late" -->
+    <string name="today_later_than_expected">later than expected</string>
+
+    <!-- ============================================================ -->
+    <!-- Calendar -->
+
+    <!-- The button back to the today screen -->
+    <string name="calendar_today">Today</string>
+    <!-- The key under the month: what each mark means -->
+    <!-- A filled circle: a bleeding day that was recorded -->
+    <string name="calendar_key_recorded">Recorded</string>
+    <!-- An outlined circle: a day the next period is expected -->
+    <string name="calendar_key_expected">Expected</string>
+    <string name="calendar_key_fertile">Fertile</string>
+    <string name="calendar_key_ovulation">Ovulation</string>
+
+    <!-- ============================================================ -->
+    <!-- Day screen -->
+
+    <!-- A toggle; the label says the current state -->
+    <string name="day_bleeding">Bleeding</string>
+    <string name="day_not_bleeding">Not bleeding</string>
+    <!-- How heavy the bleeding is -->
+    <string name="day_intensity_light">Light</string>
+    <string name="day_intensity_medium">Medium</string>
+    <string name="day_intensity_heavy">Heavy</string>
+    <!-- Section heading (noun) -->
+    <string name="day_heading_mood">Mood</string>
+    <string name="day_heading_symptoms">Symptoms</string>
+    <!-- A toggle: sex on this day -->
+    <string name="day_intimacy">Intimacy</string>
+    <!-- Section heading (noun) -->
+    <string name="day_heading_note">Note</string>
+    <!-- Closes the day and goes back -->
+    <string name="day_done">Done</string>
+    <!-- After the offered words: add a word of your own -->
+    <string name="day_tag_other">Other…</string>
+    <!-- Beside the box where you type your own word (verb) -->
+    <string name="day_tag_add">Add</string>
+
+    <!-- ============================================================ -->
+    <!-- About dialog -->
+
+    <!-- %1$s is the version number -->
+    <string name="about_version">Cycle %1$s</string>
+    <string name="about_privacy">No permissions. No network. What you record stays on this phone.</string>
+    <string name="about_licence">GNU General Public License v3</string>
+    <string name="about_close">Close</string>
+    <!-- Opens the donation page -->
+    <string name="about_feed_llamas">Feed the llamas</string>
+    <string name="about_no_browser">There is no browser on this phone to open that with.</string>
 </resources>

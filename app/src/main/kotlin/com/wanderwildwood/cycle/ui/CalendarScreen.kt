@@ -20,9 +20,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.wanderwildwood.cycle.R
 import com.wanderwildwood.cycle.cycle.Forecast
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -129,7 +131,7 @@ fun CalendarScreen(
         Spacer(Modifier.height(12.dp))
 
         TextMMD(
-            text = "Today",
+            text = stringResource(R.string.calendar_today),
             style = MaterialTheme.typography.bodyMedium,
             textAlign = TextAlign.Center,
             modifier = Modifier
@@ -216,20 +218,20 @@ private fun Day(
 @Composable
 private fun Key() {
     Column(horizontalAlignment = Alignment.Start, modifier = Modifier.fillMaxWidth()) {
-        KeyRow(filled = true) { TextMMD("Recorded", style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Normal) }
-        KeyRow(filled = false) { TextMMD("Expected", style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Normal) }
+        KeyRow(filled = true) { TextMMD(stringResource(R.string.calendar_key_recorded), style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Normal) }
+        KeyRow(filled = false) { TextMMD(stringResource(R.string.calendar_key_expected), style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Normal) }
         Row(verticalAlignment = Alignment.CenterVertically) {
             Box(Modifier.size(18.dp), contentAlignment = Alignment.Center) {
                 Box(Modifier.size(width = 13.dp, height = 2.dp).background(Color.Black))
             }
             Spacer(Modifier.size(6.dp))
-            TextMMD("Fertile", style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Normal)
+            TextMMD(stringResource(R.string.calendar_key_fertile), style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Normal)
             Spacer(Modifier.size(14.dp))
             Box(Modifier.size(18.dp), contentAlignment = Alignment.Center) {
                 Box(Modifier.size(5.dp).background(Color.Black, CircleShape))
             }
             Spacer(Modifier.size(6.dp))
-            TextMMD("Ovulation", style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Normal)
+            TextMMD(stringResource(R.string.calendar_key_ovulation), style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Normal)
         }
     }
 }

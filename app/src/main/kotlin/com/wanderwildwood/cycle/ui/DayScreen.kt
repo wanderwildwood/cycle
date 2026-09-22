@@ -33,9 +33,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.wanderwildwood.cycle.R
 import com.wanderwildwood.cycle.data.DayNote
 import com.wanderwildwood.cycle.data.cleanTag
 import com.wanderwildwood.cycle.data.tagString
@@ -62,7 +64,7 @@ val SYMPTOMS = listOf(
 )
 
 /** What the three intensity buttons say, in order; the stored value is the index plus one. */
-private val INTENSITIES = listOf("Light", "Medium", "Heavy")
+private val INTENSITIES = listOf(R.string.day_intensity_light, R.string.day_intensity_medium, R.string.day_intensity_heavy)
 
 /**
  * One day, in full.
@@ -136,7 +138,7 @@ fun DayScreen(
                 // already applies. You can still write a note against it.
                 if (day <= today) {
                     Choice(
-                        label = if (isBleeding) "Bleeding" else "Not bleeding",
+                        label = if (isBleeding) stringResource(R.string.day_bleeding) else stringResource(R.string.day_not_bleeding),
                         chosen = isBleeding,
                         onClick = { onSetBleeding(!isBleeding) },
                         modifier = Modifier.fillMaxWidth(),
@@ -147,7 +149,7 @@ fun DayScreen(
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             INTENSITIES.forEachIndexed { index, name ->
                                 Choice(
-                                    label = name,
+                                    label = stringResource(name),
                                     chosen = intensity == index + 1,
                                     onClick = { onSetIntensity(index + 1) },
                                     modifier = Modifier.weight(1f),
@@ -160,7 +162,7 @@ fun DayScreen(
                 }
             }
             item {
-                Heading("Mood")
+                Heading(stringResource(R.string.day_heading_mood))
             }
             item {
                 Tags(
@@ -174,7 +176,7 @@ fun DayScreen(
                 Spacer(Modifier.height(18.dp))
             }
             item {
-                Heading("Symptoms")
+                Heading(stringResource(R.string.day_heading_symptoms))
             }
             item {
                 Tags(
@@ -189,7 +191,7 @@ fun DayScreen(
             }
             item {
                 Choice(
-                    label = "Intimacy",
+                    label = stringResource(R.string.day_intimacy),
                     chosen = intimacy,
                     onClick = { intimacy = !intimacy },
                     modifier = Modifier.fillMaxWidth(),
@@ -199,7 +201,7 @@ fun DayScreen(
                 Spacer(Modifier.height(18.dp))
             }
             item {
-                Heading("Note")
+                Heading(stringResource(R.string.day_heading_note))
             }
             item {
                 BasicTextField(
@@ -225,7 +227,7 @@ fun DayScreen(
         // better answer to the same problem and the one the rest of the phone gives.
 
         TextMMD(
-            text = "Done",
+            text = stringResource(R.string.day_done),
             style = MaterialTheme.typography.bodyMedium,
             textAlign = TextAlign.Center,
             modifier = Modifier
@@ -276,7 +278,7 @@ private fun Tags(
             Choice(label = tag, chosen = true, onClick = { onToggle(tag) })
         }
         if (!adding) {
-            Choice(label = "Other\u2026", chosen = false, onClick = { adding = true })
+            Choice(label = stringResource(R.string.day_tag_other), chosen = false, onClick = { adding = true })
         }
     }
 
@@ -309,7 +311,7 @@ private fun Tags(
                     .border(1.dp, Color.Black)
                     .padding(horizontal = 10.dp, vertical = 10.dp),
             )
-            Choice(label = "Add", chosen = false, onClick = { commit() })
+            Choice(label = stringResource(R.string.day_tag_add), chosen = false, onClick = { commit() })
         }
     }
 }

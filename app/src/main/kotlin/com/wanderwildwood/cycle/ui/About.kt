@@ -29,6 +29,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.Image
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import com.wanderwildwood.cycle.BuildConfig
 import com.wanderwildwood.cycle.R
 
@@ -43,13 +44,13 @@ import com.wanderwildwood.cycle.R
 @Composable
 fun AboutDialog(onDismiss: () -> Unit) {
     EInkDialog(onDismiss = onDismiss) {
-        TextMMD(text = "Cycle ${BuildConfig.VERSION_NAME}", style = MaterialTheme.typography.bodyLarge)
+        TextMMD(text = stringResource(R.string.about_version, BuildConfig.VERSION_NAME), style = MaterialTheme.typography.bodyLarge)
 
         Spacer(Modifier.height(14.dp))
-        Line("No permissions. No network. What you record stays on this phone.")
+        Line(stringResource(R.string.about_privacy))
 
         Spacer(Modifier.height(14.dp))
-        Line("GNU General Public License v3")
+        Line(stringResource(R.string.about_licence))
 
         Spacer(Modifier.height(14.dp))
         Line("github.com/wanderwildwood/cycle")
@@ -59,7 +60,7 @@ fun AboutDialog(onDismiss: () -> Unit) {
 
         Spacer(Modifier.height(20.dp))
         TextMMD(
-            text = "Close",
+            text = stringResource(R.string.about_close),
             style = MaterialTheme.typography.titleSmall,
             textAlign = TextAlign.Center,
             modifier = Modifier
@@ -99,7 +100,7 @@ private fun Llama() {
                         Intent(Intent.ACTION_VIEW, Uri.parse(DONATE)),
                     )
                 }.onFailure {
-                    Toast.makeText(context, "There is no browser on this phone to open that with.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, context.getString(R.string.about_no_browser), Toast.LENGTH_SHORT).show()
                 }
             }
             .padding(vertical = 4.dp),
@@ -110,7 +111,7 @@ private fun Llama() {
             modifier = Modifier.size(22.dp),
         )
         Spacer(Modifier.width(6.dp))
-        Line("Feed the llamas")
+        Line(stringResource(R.string.about_feed_llamas))
     }
 }
 

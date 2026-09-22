@@ -22,10 +22,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.wanderwildwood.cycle.R
 import com.wanderwildwood.cycle.cycle.Forecast
 import com.wanderwildwood.cycle.cycle.awaitingConfirmation
 import com.wanderwildwood.cycle.cycle.dayOfPeriod
@@ -114,22 +117,22 @@ fun TodayScreen(
         // there is no third button for it.
         Action(
             label = when {
-                bleedingToday -> "Undo"
-                awaiting -> "Bleeding today"
-                else -> "Period started"
+                bleedingToday -> stringResource(R.string.today_undo)
+                awaiting -> stringResource(R.string.today_bleeding_today)
+                else -> stringResource(R.string.today_period_started)
             },
             onClick = if (bleedingToday) onUnmarkToday else onMarkToday,
         )
 
         Spacer(Modifier.height(16.dp))
 
-        Action(label = "Calendar", onClick = onOpenCalendar)
+        Action(label = stringResource(R.string.today_calendar), onClick = onOpenCalendar)
 
         Spacer(Modifier.height(16.dp))
 
         // Nothing worth sending until there is a date to send.
         if (forecast.nextStart != null || bleedingToday) {
-            Action(label = "Send to\u2026", onClick = onSend)
+            Action(label = stringResource(R.string.today_send_to), onClick = onSend)
         }
 
         // Weighted rather than a fixed gap: whatever is left over collapses here, so the
@@ -140,15 +143,18 @@ fun TodayScreen(
         // Offered while the app is empty and then never again. An import is something you do
         // once; a permanent button for it would be a permanent reminder of a finished job.
         if (offerImport) {
-            Action(label = "Import history", onClick = onImport)
+            Action(label = stringResource(R.string.today_import_history), onClick = onImport)
             Spacer(Modifier.height(24.dp))
         }
 
         // Quiet, and only worth saying once there is something behind it.
         if (!forecast.estimated) {
             TextMMD(
-                text = "Cycle ${span(forecast.cycleLength, forecast.cycleRange)} · " +
-                    "period ${span(forecast.periodLength, forecast.periodRange)}",
+                text = stringResource(
+                    R.string.today_cycle_and_period,
+                    span(forecast.cycleLength, forecast.cycleRange),
+                    span(forecast.periodLength, forecast.periodRange),
+                ),
                 style = MaterialTheme.typography.labelSmall,
                 fontWeight = FontWeight.Normal,
             )
@@ -160,7 +166,7 @@ fun TodayScreen(
         if (offerBackup) {
             Spacer(Modifier.height(12.dp))
             TextMMD(
-                text = "Back up\u2026",
+                text = stringResource(R.string.today_back_up),
                 style = MaterialTheme.typography.labelSmall,
                 fontWeight = FontWeight.Normal,
                 modifier = Modifier
@@ -180,13 +186,15 @@ fun TodayScreen(
  * out — no longer, and no more precise than the thing it describes. Where they agreed, or where
  * there is only one, there is no range to give and the number stands.
  */
+@Composable
 private fun span(middle: Int, range: IntRange?): String =
-    if (range == null || range.first == range.last) "$middle days"
-    else "${range.first}–${range.last} days"
+    if (range == null || range.first == range.last) stringResource(R.string.today_span_days, middle)
+    else stringResource(R.string.today_span_range_days, range.first, range.last)
 
 /**
  * The count, and the line under it. The second half is null when there is nothing worth adding.
  */
+@Composable
 private fun headline(
     today: LocalDate,
     bleedingToday: Boolean,
@@ -195,7 +203,7 @@ private fun headline(
 ): Pair<String, String?> {
     if (bleedingToday) {
         val day = dayOfPeriod(forecast, today) ?: 1
-        return "Day $day" to "of your period"
+        return stringResource(R.string.today_day_n, day) to stringResource(R.string.today_of_your_period)
     }
 
     // The countdown is measured from a period that has probably not ended, so during this window it
@@ -203,21 +211,21 @@ private fun headline(
     // still worth showing; what it needs is the line underneath saying you have not confirmed it.
     if (awaiting) {
         val day = dayOfPeriod(forecast, today) ?: 1
-        return "Day $day" to "not recorded yet"
+        return stringResource(R.string.today_day_n, day) to stringResource(R.string.today_not_recorded_yet)
     }
 
-    val until = forecast.daysUntilNextStart ?: return "No history yet" to "Mark a day to begin"
+    val until = forecast.daysUntilNextStart ?: return stringResource(R.string.today_no_history) to stringResource(R.string.today_mark_a_day)
 
     // See the note in Summary: this is a guess and stays one, so it is expected rather than
     // due, and a day past it is later than expected rather than late. The count keeps the
     // shape the other rows have — a number, and a line under it saying what the number is —
     // which the bare "3 days late" never did.
     return when {
-        until > 1 -> "$until days" to "until your period"
-        until == 1 -> "Tomorrow" to "your period is expected"
-        until == 0 -> "Today" to "your period is expected"
-        until == -1 -> "1 day" to "later than expected"
-        else -> "${-until} days" to "later than expected"
+        until > 1 -> pluralStringResource(R.plurals.today_days, until, until) to stringResource(R.string.today_until_your_period)
+        until == 1 -> stringResource(R.string.today_tomorrow) to stringResource(R.string.today_period_expected)
+        until == 0 -> stringResource(R.string.today_today) to stringResource(R.string.today_period_expected)
+        until == -1 -> pluralStringResource(R.plurals.today_days, 1, 1) to stringResource(R.string.today_later_than_expected)
+        else -> pluralStringResource(R.plurals.today_days, -until, -until) to stringResource(R.string.today_later_than_expected)
     }
 }
 
