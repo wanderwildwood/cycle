@@ -53,7 +53,7 @@ fun AboutDialog(onDismiss: () -> Unit) {
         Line(stringResource(R.string.about_licence))
 
         Spacer(Modifier.height(14.dp))
-        Line("github.com/wanderwildwood/cycle")
+        Line("wanderthe.dev")
 
         Spacer(Modifier.height(18.dp))
         Llama()
