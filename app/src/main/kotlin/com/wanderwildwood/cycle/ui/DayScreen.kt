@@ -363,7 +363,9 @@ private fun Choice(
             .border(1.dp, Color.Black)
             .then(if (chosen) Modifier.background(Color.Black) else Modifier)
             .clickable(onClick = onClick)
-            .padding(horizontal = 12.dp),
+            // 8dp, not 12: three of these share a row at 480px, and at 12 "Medium" broke
+            // across two lines as "Mediu/m".
+            .padding(horizontal = 8.dp),
     ) {
         Box(
             modifier = Modifier
@@ -373,7 +375,7 @@ private fun Choice(
                     else Modifier.border(1.dp, Color.Black, CircleShape)
                 ),
         )
-        Spacer(Modifier.size(8.dp))
+        Spacer(Modifier.size(6.dp))
         TextMMD(
             text = label,
             style = MaterialTheme.typography.bodySmall,
