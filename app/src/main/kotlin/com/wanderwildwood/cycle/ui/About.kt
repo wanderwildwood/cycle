@@ -75,7 +75,7 @@ fun AboutDialog(onDismiss: () -> Unit) {
  * Three words rather than an address, because the address was more weight than a llama is
  * worth down here. They are a verb and an object, so what happens when you press them is not
  * a surprise even though the page they open is not named. The site's address sits at the start
- * of the same line, and only the llama and its words open the page.
+ * of the same line and opens the site; the llama and its words open the page.
  *
  * The Kompakt may have nothing registered for a web address at all, so the intent is allowed
  * to fail quietly rather than take the dialog down with it.
@@ -87,7 +87,22 @@ private fun Llama() {
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.fillMaxWidth(),
     ) {
-        Line("wanderthe.dev")
+        Row(
+            // The site's address opens the site, the way the llama beside it opens its page.
+            modifier = Modifier
+                .clickable {
+                    runCatching {
+                        context.startActivity(
+                            Intent(Intent.ACTION_VIEW, Uri.parse("https://wanderthe.dev")),
+                        )
+                    }.onFailure {
+                        Toast.makeText(context, context.getString(R.string.about_no_browser), Toast.LENGTH_SHORT).show()
+                    }
+                }
+                .padding(vertical = 4.dp),
+        ) {
+            Line("wanderthe.dev")
+        }
         Spacer(Modifier.width(6.dp))
         Row(
             verticalAlignment = Alignment.CenterVertically,
