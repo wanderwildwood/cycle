@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.Cycle" parent="android:Theme.Material.Light.NoActionBar">
+    <style name="Base.Theme.Cycle" parent="android:Theme.Material.Light.NoActionBar">
         <item name="android:windowBackground">@android:color/white</item>
         <item name="android:statusBarColor">@android:color/white</item>
         <item name="android:windowLightStatusBar">true</item>
     </style>
+
+    <!-- values-v31 adds the blank splash to this; below 31 there is no splash to blank. -->
+    <style name="Theme.Cycle" parent="Base.Theme.Cycle" />
 </resources>
