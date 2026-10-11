@@ -149,12 +149,13 @@ fun DayScreen(
         Spacer(Modifier.height(14.dp))
 
 
-        // MMD's list, not a scrolling Column: it steps four rows to a swipe and stops, and it
-        // brings the chevron rail at both ends. A screen that coasts was the one screen in
+        // MMD's list, not a scrolling Column: it steps four rows to a swipe and stops, with no
+        // scrollbar beside it. A screen that coasts was the one screen in
         // the app that did not behave like the phone it is on.
         LazyColumnMMD(
             modifier = Modifier
                 .weight(1f),
+            isScrollbarVisible = false,
         ) {
             item {
                 // A day that has not happened yet is not yours to record, the same rule the calendar
@@ -245,9 +246,8 @@ fun DayScreen(
         }
 
         // The hand-drawn ▾ that used to sit here, driven off `scroll.canScrollForward`,
-        // is gone: MMD's list draws its own rail — a chevron at each end, dotted where
-        // there is nowhere further to go and filled where there is — which is both a
-        // better answer to the same problem and the one the rest of the phone gives.
+        // is gone, and so is the MMD rail that replaced it: the list pages on a swipe
+        // with no scrollbar, as Messaging does.
 
         TextMMD(
             text = stringResource(R.string.day_done),
