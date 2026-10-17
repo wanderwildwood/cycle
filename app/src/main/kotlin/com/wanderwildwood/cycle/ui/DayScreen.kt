@@ -20,7 +20,6 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
-import com.mudita.mmd.components.lazy.LazyColumnMMD
 import com.mudita.mmd.components.text.TextMMD
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -149,13 +148,12 @@ fun DayScreen(
         Spacer(Modifier.height(14.dp))
 
 
-        // MMD's list, not a scrolling Column: it steps four rows to a swipe and stops, with no
-        // scrollbar beside it. A screen that coasts was the one screen in
+        // A paged list, not a scrolling Column: it turns a page on whole rows to a swipe and
+        // stops, with no scrollbar beside it. A screen that coasts was the one screen in
         // the app that did not behave like the phone it is on.
-        LazyColumnMMD(
+        PagedColumn(
             modifier = Modifier
                 .weight(1f),
-            isScrollbarVisible = false,
         ) {
             item {
                 // A day that has not happened yet is not yours to record, the same rule the calendar
@@ -239,9 +237,6 @@ fun DayScreen(
                         .border(1.dp, Color.Black)
                         .padding(10.dp),
                 )
-            }
-            item {
-                Spacer(Modifier.height(16.dp))
             }
         }
 
