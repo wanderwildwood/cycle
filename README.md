@@ -7,8 +7,8 @@ so what is recorded here has no mechanism by which to leave the phone.
 
 | | |
 |---|---|
-| ![The first run, which asks for nothing](screenshots/1-first-run.png) | ![Today](screenshots/2-today.png) |
-| ![The calendar, recorded against expected](screenshots/3-calendar.png) | ![One day](screenshots/4-day.png) |
+| ![Today](screenshots/1-today.png) | ![The calendar: recorded days, fertile days and ovulation](screenshots/2-calendar.png) |
+| ![One day](screenshots/3-day.png) | ![The same day: symptoms and a note](screenshots/4-day-notes.png) |
 
 ## Where it came from
 
