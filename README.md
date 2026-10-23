@@ -45,6 +45,10 @@ and when you stop confirming, it stops on its own two days later. That span is t
 grouping tolerates, so a day confirmed late still joins the period rather than starting a new one,
 and it is the reason a single forgotten tap costs nothing.
 
+## Privacy
+
+Privacy: what the app stores and what it sends is set out in [PRIVACY.md](PRIVACY.md).
+
 ## Licence
 
 GPL-3.0-only. See [LICENSE](LICENSE).
