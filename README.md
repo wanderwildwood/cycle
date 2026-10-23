@@ -1,4 +1,4 @@
-# cycle
+# Cycle
 
 A cycle tracker for the Mudita Kompakt. Written from scratch.
 
