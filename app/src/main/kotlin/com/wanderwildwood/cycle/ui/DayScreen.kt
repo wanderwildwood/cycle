@@ -163,56 +163,59 @@ fun DayScreen(
             item {
                 // A day that has not happened yet is not yours to record, the same rule the calendar
                 // already applies. You can still write a note against it.
-                if (day <= today) {
-                    Choice(
-                        label = if (isBleeding) stringResource(R.string.day_bleeding) else stringResource(R.string.day_not_bleeding),
-                        chosen = isBleeding,
-                        onClick = { onSetBleeding(!isBleeding) },
-                        modifier = Modifier.fillMaxWidth(),
-                    )
+                Column {
+                    if (day <= today) {
+                        Choice(
+                            label = if (isBleeding) stringResource(R.string.day_bleeding) else stringResource(R.string.day_not_bleeding),
+                            chosen = isBleeding,
+                            onClick = { onSetBleeding(!isBleeding) },
+                            modifier = Modifier.fillMaxWidth(),
+                        )
 
-                    if (isBleeding) {
-                        Spacer(Modifier.height(8.dp))
-                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            INTENSITIES.forEachIndexed { index, name ->
-                                Choice(
-                                    label = stringResource(name),
-                                    chosen = intensity == index + 1,
-                                    onClick = { onSetIntensity(index + 1) },
-                                    modifier = Modifier.weight(1f),
-                                    radio = true,
-                                )
+                        if (isBleeding) {
+                            Spacer(Modifier.height(8.dp))
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                INTENSITIES.forEachIndexed { index, name ->
+                                    Choice(
+                                        label = stringResource(name),
+                                        chosen = intensity == index + 1,
+                                        onClick = { onSetIntensity(index + 1) },
+                                        modifier = Modifier.weight(1f),
+                                        radio = true,
+                                    )
+                                }
                             }
                         }
-                    }
 
-                    Spacer(Modifier.height(18.dp))
+                        Spacer(Modifier.height(18.dp))
+                    }
                 }
             }
             item {
-                Heading(stringResource(R.string.day_heading_mood))
-            }
-            item {
-                Tags(
-                    vocabulary = MOODS,
-                    chosen = moods,
-                    onToggle = { tag -> moods = if (tag in moods) moods - tag else moods + tag },
-                    onAdd = { tag -> moods = moods + tag },
-                )
+                // Heading and words in one row, so a page never ends on a heading alone.
+                Column {
+                    Heading(stringResource(R.string.day_heading_mood))
+                    Tags(
+                        vocabulary = MOODS,
+                        chosen = moods,
+                        onToggle = { tag -> moods = if (tag in moods) moods - tag else moods + tag },
+                        onAdd = { tag -> moods = moods + tag },
+                    )
+                }
             }
             item {
                 Spacer(Modifier.height(18.dp))
             }
             item {
-                Heading(stringResource(R.string.day_heading_symptoms))
-            }
-            item {
-                Tags(
-                    vocabulary = SYMPTOMS,
-                    chosen = symptoms,
-                    onToggle = { tag -> symptoms = if (tag in symptoms) symptoms - tag else symptoms + tag },
-                    onAdd = { tag -> symptoms = symptoms + tag },
-                )
+                Column {
+                    Heading(stringResource(R.string.day_heading_symptoms))
+                    Tags(
+                        vocabulary = SYMPTOMS,
+                        chosen = symptoms,
+                        onToggle = { tag -> symptoms = if (tag in symptoms) symptoms - tag else symptoms + tag },
+                        onAdd = { tag -> symptoms = symptoms + tag },
+                    )
+                }
             }
             item {
                 Spacer(Modifier.height(18.dp))
@@ -229,20 +232,20 @@ fun DayScreen(
                 Spacer(Modifier.height(18.dp))
             }
             item {
-                Heading(stringResource(R.string.day_heading_note))
-            }
-            item {
-                BasicTextField(
-                    value = note,
-                    onValueChange = { note = it },
-                    textStyle = MaterialTheme.typography.bodySmall.copy(color = Color.Black),
-                    cursorBrush = SolidColor(Color.Black),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .heightIn(min = 96.dp)
-                        .border(1.dp, Color.Black)
-                        .padding(10.dp),
-                )
+                Column {
+                    Heading(stringResource(R.string.day_heading_note))
+                    BasicTextField(
+                        value = note,
+                        onValueChange = { note = it },
+                        textStyle = MaterialTheme.typography.bodySmall.copy(color = Color.Black),
+                        cursorBrush = SolidColor(Color.Black),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(min = 96.dp)
+                            .border(1.dp, Color.Black)
+                            .padding(10.dp),
+                    )
+                }
             }
         }
 

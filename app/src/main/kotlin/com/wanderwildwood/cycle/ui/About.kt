@@ -66,19 +66,23 @@ fun AboutScreen(onDismiss: () -> Unit) {
     ) {
         PagedColumn(modifier = Modifier.weight(1f)) {
             item {
-                TextMMD(
-                    text = stringResource(R.string.about_version, BuildConfig.VERSION_NAME),
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.semantics { heading() },
-                )
-                Spacer(Modifier.height(14.dp))
+                Column {
+                    TextMMD(
+                        text = stringResource(R.string.about_version, BuildConfig.VERSION_NAME),
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier.semantics { heading() },
+                    )
+                    Spacer(Modifier.height(14.dp))
+                }
             }
             section(R.string.about_privacy_heading, R.string.about_privacy_body)
             section(R.string.about_terms_heading, R.string.about_terms_body)
             section(R.string.about_medical_heading, R.string.about_medical_body)
             item {
-                Heading(stringResource(R.string.about_open_source_heading))
-                Body(stringResource(R.string.about_open_source_body))
+                Column {
+                    Heading(stringResource(R.string.about_open_source_heading))
+                    Body(stringResource(R.string.about_open_source_body))
+                }
             }
             listOf(
                 R.string.about_oss_mmd,
@@ -99,8 +103,8 @@ fun AboutScreen(onDismiss: () -> Unit) {
                     DONATE,
                     llama = true,
                 )
-                Spacer(Modifier.height(18.dp))
             }
+            item { Spacer(Modifier.height(18.dp)) }
             item { Heading(stringResource(R.string.about_licence_heading)) }
             items(licence) { Body(it) }
         }
@@ -123,9 +127,11 @@ fun AboutScreen(onDismiss: () -> Unit) {
 private fun LazyListScope.section(title: Int, body: Int) {
     // One row, so a page never ends on a heading whose words are on the next one.
     item {
-        Heading(stringResource(title))
-        Body(stringResource(body))
-        Spacer(Modifier.height(14.dp))
+        Column {
+            Heading(stringResource(title))
+            Body(stringResource(body))
+            Spacer(Modifier.height(14.dp))
+        }
     }
 }
 
