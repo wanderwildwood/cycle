@@ -84,3 +84,37 @@ fun ImportedPeriod.days(): List<LocalDate> {
     val last = end ?: return listOf(start)
     return generateSequence(start) { if (it < last) it.plusDays(1) else null }.toList()
 }
+
+/** What a picked file turned out to be. */
+sealed interface Loaded {
+    /** One of this app's own backups, with at least one day or note in it. */
+    data class FromBackup(val backup: Backup) : Loaded {
+        /** Days restored, counting a day that has only a note. */
+        val days: Int get() = (backup.days.map { it.day } + backup.notes.map { it.day }).toSet().size
+    }
+
+    /** A Period Tracker export, with at least one period or dated note in it. */
+    data class FromExport(val imported: Imported) : Loaded
+
+    /** Neither: an empty file, the wrong kind of file, or nothing in it that was understood. */
+    data object Unreadable : Loaded
+}
+
+/**
+ * Work out what a picked file is, without touching the record.
+ *
+ * The parsers skip what they do not recognise, so a photograph or a shopping list parses
+ * "successfully" into nothing. That used to be written to the record as nothing and reported as
+ * nothing; it is [Loaded.Unreadable] now, and the caller says so in words.
+ */
+fun readFile(text: String?): Loaded {
+    if (text.isNullOrBlank()) return Loaded.Unreadable
+    if (looksLikeBackup(text)) {
+        val backup = parseBackup(text)
+        return if (backup.days.isEmpty() && backup.notes.isEmpty()) Loaded.Unreadable
+        else Loaded.FromBackup(backup)
+    }
+    val imported = parsePeriodTrackerExport(text)
+    return if (imported.periods.isEmpty() && imported.notes.isEmpty()) Loaded.Unreadable
+    else Loaded.FromExport(imported)
+}

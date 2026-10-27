@@ -22,7 +22,10 @@
     <!-- The quiet line near the foot: %1$s and %2$s are lengths such as "29 days" or "27–31 days" -->
     <string name="today_cycle_and_period">Cycle %1$s · period %2$s</string>
     <!-- A length that did not vary; %1$d is the number of days -->
-    <string name="today_span_days">%1$d days</string>
+    <plurals name="today_span_days">
+        <item quantity="one">%1$d day</item>
+        <item quantity="other">%1$d days</item>
+    </plurals>
     <!-- A length as a range, e.g. 27–31 days -->
     <string name="today_span_range_days">%1$d–%2$d days</string>
 
@@ -88,7 +91,17 @@
     <!-- Calendar -->
 
     <!-- The button back to the today screen -->
-    <string name="calendar_today">Today</string>
+    <string name="calendar_done">Done</string>
+    <!-- Spoken for the month title, which jumps back to this month when pressed -->
+    <string name="calendar_this_month">Go to this month</string>
+    <string name="calendar_previous_month">Previous month</string>
+    <string name="calendar_next_month">Next month</string>
+    <!-- Spoken for a day cell: %1$s is the date, then the state words below are appended -->
+    <string name="calendar_day_today">today</string>
+    <string name="calendar_day_recorded">period recorded</string>
+    <string name="calendar_day_expected">period expected</string>
+    <string name="calendar_day_fertile">fertile</string>
+    <string name="calendar_day_ovulation">ovulation</string>
     <!-- The key under the month: what each mark means -->
     <!-- A filled circle: a bleeding day that was recorded -->
     <string name="calendar_key_recorded">Recorded</string>
@@ -146,14 +159,57 @@
     <string name="day_tag_add">Add</string>
 
     <!-- ============================================================ -->
-    <!-- About dialog -->
+    <!-- Messages after Import history and Back up -->
+    <plurals name="notice_imported">
+        <item quantity="one">Imported %d period.</item>
+        <item quantity="other">Imported %d periods.</item>
+    </plurals>
+    <plurals name="notice_restored">
+        <item quantity="one">Restored %d day.</item>
+        <item quantity="other">Restored %d days.</item>
+    </plurals>
+    <plurals name="notice_backed_up">
+        <item quantity="one">Backed up %d day.</item>
+        <item quantity="other">Backed up %d days.</item>
+    </plurals>
+    <string name="notice_unreadable">That file is not a Cycle backup or a Period Tracker export, so nothing was changed.</string>
+    <string name="notice_import_failed">The file could not be read, so nothing was changed.</string>
+    <string name="notice_backup_failed">The backup could not be written, so no file was saved.</string>
+    <!-- Spoken for the message line; pressing it clears it -->
+    <string name="notice_dismiss">Dismiss message</string>
+
+    <!-- ============================================================ -->
+    <!-- Day screen, spoken labels -->
+    <string name="day_state_on">on</string>
+    <string name="day_state_off">off</string>
+
+    <!-- ============================================================ -->
+    <!-- About -->
 
     <!-- %1$s is the version number -->
     <string name="about_version">Cycle %1$s</string>
-    <string name="about_privacy">No permissions. No network. What you record stays on this phone.</string>
-    <string name="about_licence">GNU General Public License v3</string>
+    <!-- Spoken for the small i that opens About -->
+    <string name="about_label">About this app</string>
     <string name="about_close">Close</string>
     <!-- Opens the donation page -->
     <string name="about_feed_llamas">feed the llamas</string>
     <string name="about_no_browser">There is no browser on this phone to open that with.</string>
+    <string name="about_open_website">Open wanderthe.dev</string>
+    <string name="about_open_source">Open the source code</string>
+    <string name="about_open_donate">Open the donation page</string>
+
+    <string name="about_privacy_heading">Privacy</string>
+    <string name="about_privacy_body">Everything you put in this app stays on this phone. It has no permissions and no internet access, so nothing is sent anywhere, and nothing is collected about you. There are no ads, no analytics and no tracking. A backup is written only where you choose to save it, and Send to… hands one line, when your next period is expected, to the app you pick, which does the sending.</string>
+    <string name="about_terms_heading">Terms</string>
+    <string name="about_terms_body">This app is free software under the GNU General Public License v3. It comes with no warranty: use it at your own risk.</string>
+    <string name="about_medical_heading">Not medical advice</string>
+    <string name="about_medical_body">This app is a record-keeping aid, not medical advice. It does not diagnose, treat or replace a doctor or pharmacist. Its dates are estimates worked out from what you recorded. It is not contraception, and it is not a fertility or pregnancy test: do not rely on it to prevent or to plan a pregnancy. Talk to a doctor about anything that worries you.</string>
+    <string name="about_open_source_heading">Open source</string>
+    <string name="about_open_source_body">Cycle is free software, licensed GPL-3.0-only. It was written from scratch and uses these open-source parts:</string>
+    <string name="about_oss_mmd">Mudita Mindful Design (MMD), the interface library (Apache License 2.0)</string>
+    <string name="about_oss_androidx">AndroidX, Jetpack Compose and Room (Apache License 2.0)</string>
+    <string name="about_oss_kotlin">Kotlin and kotlinx.coroutines (Apache License 2.0)</string>
+    <string name="about_oss_lato">Lato typeface, tyPoland (SIL Open Font License 1.1)</string>
+    <string name="about_source_line">Source code: github.com/wanderwildwood/cycle</string>
+    <string name="about_licence_heading">GNU General Public License v3</string>
 </resources>

@@ -1,6 +1,17 @@
 package com.wanderwildwood.cycle.ui
 
 import android.content.Intent
+import android.content.res.Resources
+import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.items
+import androidx.compose.runtime.remember
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.Role
 import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.Canvas
@@ -34,111 +45,148 @@ import com.wanderwildwood.cycle.BuildConfig
 import com.wanderwildwood.cycle.R
 
 /**
- * What this is, what it does with what you tell it, and where the source lives.
+ * What this is, what it does with what you tell it, the licence, and where the source lives.
  *
- * This app asks for no permissions and shows no settings, which means that without this there
- * was nowhere at all to read its version, its licence, or the fact that nothing it holds ever
- * leaves the phone. Those are the things somebody wants to know before trusting a record like
- * this one to a piece of software, and they were the things it did not say.
+ * A full screen on a [PagedColumn] rather than a dialog: with the privacy and terms text, the
+ * medical note and the licence it is far longer than a dialog can be, and it pages on whole rows
+ * like every other list here. This app asks for no permissions and shows no settings, so without
+ * this there was nowhere at all to read what it holds or what it promises.
  */
 @Composable
-fun AboutDialog(onDismiss: () -> Unit) {
-    EInkDialog(onDismiss = onDismiss) {
-        TextMMD(text = stringResource(R.string.about_version, BuildConfig.VERSION_NAME), style = MaterialTheme.typography.bodyLarge)
+fun AboutScreen(onDismiss: () -> Unit) {
+    val context = LocalContext.current
+    BackHandler(onBack = onDismiss)
+    val licence = remember { licenceParagraphs(context.resources) }
 
-        Spacer(Modifier.height(14.dp))
-        Line(stringResource(R.string.about_privacy))
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+            .padding(horizontal = 16.dp, vertical = 16.dp),
+    ) {
+        PagedColumn(modifier = Modifier.weight(1f)) {
+            item {
+                TextMMD(
+                    text = stringResource(R.string.about_version, BuildConfig.VERSION_NAME),
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.semantics { heading() },
+                )
+                Spacer(Modifier.height(14.dp))
+            }
+            section(R.string.about_privacy_heading, R.string.about_privacy_body)
+            section(R.string.about_terms_heading, R.string.about_terms_body)
+            section(R.string.about_medical_heading, R.string.about_medical_body)
+            item {
+                Heading(stringResource(R.string.about_open_source_heading))
+                Body(stringResource(R.string.about_open_source_body))
+            }
+            listOf(
+                R.string.about_oss_mmd,
+                R.string.about_oss_androidx,
+                R.string.about_oss_kotlin,
+                R.string.about_oss_lato,
+            ).forEach { item { Body("\u2022 " + stringResource(it)) } }
+            item {
+                Link(stringResource(R.string.about_source_line), stringResource(R.string.about_open_source), SOURCE)
+            }
+            item {
+                Link("wanderthe.dev", stringResource(R.string.about_open_website), "https://wanderthe.dev")
+            }
+            item {
+                Link(
+                    stringResource(R.string.about_feed_llamas),
+                    stringResource(R.string.about_open_donate),
+                    DONATE,
+                    llama = true,
+                )
+                Spacer(Modifier.height(18.dp))
+            }
+            item { Heading(stringResource(R.string.about_licence_heading)) }
+            items(licence) { Body(it) }
+        }
 
-        Spacer(Modifier.height(14.dp))
-        Line(stringResource(R.string.about_licence))
-
-        Spacer(Modifier.height(18.dp))
-        Llama()
-
-        Spacer(Modifier.height(20.dp))
+        Spacer(Modifier.height(8.dp))
         TextMMD(
             text = stringResource(R.string.about_close),
-            style = MaterialTheme.typography.titleSmall,
+            style = MaterialTheme.typography.bodyMedium,
             textAlign = TextAlign.Center,
             modifier = Modifier
                 .fillMaxWidth()
+                .heightIn(min = 48.dp)
                 .border(1.dp, Color.Black)
-                .clickable(onClick = onDismiss)
+                .clickable(role = Role.Button, onClick = onDismiss)
                 .padding(vertical = 12.dp),
         )
     }
 }
 
+private fun LazyListScope.section(title: Int, body: Int) {
+    // One row, so a page never ends on a heading whose words are on the next one.
+    item {
+        Heading(stringResource(title))
+        Body(stringResource(body))
+        Spacer(Modifier.height(14.dp))
+    }
+}
+
+/** The licence text as paragraphs: hard-wrapped lines joined, blank lines kept as breaks. */
+private fun licenceParagraphs(resources: Resources): List<String> =
+    resources.openRawResource(R.raw.gpl_3_0).bufferedReader().use { it.readText() }
+        .split(Regex("\n\\s*\n"))
+        .map { block -> block.lines().joinToString(" ") { it.trim() }.trim() }
+        .filter { it.isNotEmpty() }
+
 /**
- * A llama at the foot of the About, which opens the page a donation goes to.
+ * A line that opens a web address, at least 48dp tall.
  *
- * Three words rather than an address, because the address was more weight than a llama is
- * worth down here. They are a verb and an object, so what happens when you press them is not
- * a surprise even though the page they open is not named. The site's address sits at the start
- * of the same line and opens the site; the llama and its words open the page.
- *
- * The Kompakt may have nothing registered for a web address at all, so the intent is allowed
- * to fail quietly rather than take the dialog down with it.
+ * The Kompakt may have nothing registered for a web address at all, so the intent is allowed to
+ * fail quietly rather than take the screen down with it.
  */
 @Composable
-private fun Llama() {
+private fun Link(text: String, description: String, url: String, llama: Boolean = false) {
     val context = LocalContext.current
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .heightIn(min = 48.dp)
+            .clickable(role = Role.Button, onClickLabel = description) {
+                runCatching {
+                    context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+                }.onFailure {
+                    Toast.makeText(context, context.getString(R.string.about_no_browser), Toast.LENGTH_SHORT).show()
+                }
+            },
     ) {
-        Row(
-            // The site's address opens the site, the way the llama beside it opens its page.
-            modifier = Modifier
-                .clickable {
-                    runCatching {
-                        context.startActivity(
-                            Intent(Intent.ACTION_VIEW, Uri.parse("https://wanderthe.dev")),
-                        )
-                    }.onFailure {
-                        Toast.makeText(context, context.getString(R.string.about_no_browser), Toast.LENGTH_SHORT).show()
-                    }
-                }
-                .padding(vertical = 4.dp),
-        ) {
-            Line("wanderthe.dev")
-        }
-        Spacer(Modifier.width(6.dp))
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .clickable {
-                    // Straight to the checkout. The Donate button on the site only leads
-                    // here anyway, so the page in between is a press the reader does not need.
-                    // The short square.link form, not the long checkout.square.site address it
-                    // redirects to -- the short one is what the site itself links to, so a
-                    // regenerated checkout follows it and a published app does not break.
-                    runCatching {
-                        context.startActivity(
-                            Intent(Intent.ACTION_VIEW, Uri.parse(DONATE)),
-                        )
-                    }.onFailure {
-                        Toast.makeText(context, context.getString(R.string.about_no_browser), Toast.LENGTH_SHORT).show()
-                    }
-                }
-                .padding(vertical = 4.dp),
-        ) {
+        if (llama) {
             Image(
                 painter = painterResource(R.drawable.llama),
                 contentDescription = null,
                 modifier = Modifier.size(22.dp),
             )
             Spacer(Modifier.width(6.dp))
-            Line(stringResource(R.string.about_feed_llamas))
         }
+        TextMMD(text = text, style = MaterialTheme.typography.bodySmall)
     }
 }
 
+private const val SOURCE = "https://github.com/wanderwildwood/cycle"
 private const val DONATE = "https://square.link/u/AGu8oT10"
 
 @Composable
-private fun Line(text: String, weight: FontWeight = FontWeight.Normal) {
-    TextMMD(text = text, style = MaterialTheme.typography.labelSmall, fontWeight = weight)
+private fun Heading(text: String) {
+    TextMMD(
+        text = text,
+        style = MaterialTheme.typography.bodyMedium,
+        modifier = Modifier.semantics { heading() },
+    )
+    Spacer(Modifier.height(4.dp))
+}
+
+@Composable
+private fun Body(text: String) {
+    TextMMD(text = text, style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Normal)
+    Spacer(Modifier.height(6.dp))
 }
 
 /**
@@ -151,8 +199,8 @@ private fun Line(text: String, weight: FontWeight = FontWeight.Normal) {
 fun AboutMark(onClick: () -> Unit, modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
-            .size(44.dp)
-            .clickable(onClick = onClick),
+            .size(48.dp)
+            .clickable(role = Role.Button, onClickLabel = stringResource(R.string.about_label), onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {
         Canvas(modifier = Modifier.size(18.dp)) {

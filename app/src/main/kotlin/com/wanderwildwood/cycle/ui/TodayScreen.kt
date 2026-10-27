@@ -10,6 +10,13 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
+import kotlinx.coroutines.delay
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
@@ -56,9 +63,22 @@ fun TodayScreen(
     onImport: () -> Unit,
     offerBackup: Boolean,
     onBackUp: () -> Unit,
+    notice: String? = null,
+    onDismissNotice: () -> Unit = {},
 ) {
     var aboutOpen by remember { mutableStateOf(false) }
-    if (aboutOpen) AboutDialog(onDismiss = { aboutOpen = false })
+    if (aboutOpen) {
+        AboutScreen(onDismiss = { aboutOpen = false })
+        return
+    }
+
+    // A message about what an import or a backup did stays up for six seconds, or until pressed.
+    if (notice != null) {
+        LaunchedEffect(notice) {
+            delay(6000)
+            onDismissNotice()
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -135,6 +155,26 @@ fun TodayScreen(
             Action(label = stringResource(R.string.today_send_to), onClick = onSend)
         }
 
+        if (notice != null) {
+            Spacer(Modifier.height(16.dp))
+            TextMMD(
+                text = notice,
+                style = MaterialTheme.typography.bodySmall,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = 48.dp)
+                    .border(width = 1.dp, color = Color.Black)
+                    .clickable(
+                        role = Role.Button,
+                        onClickLabel = stringResource(R.string.notice_dismiss),
+                        onClick = onDismissNotice,
+                    )
+                    .semantics { liveRegion = LiveRegionMode.Polite }
+                    .padding(12.dp),
+            )
+        }
+
         // Weighted rather than a fixed gap: whatever is left over collapses here, so the
         // footer sits on the bottom of the panel instead of being pushed past it. A fixed 40dp
         // put "Back up…" at y=780 on a 757px content box — drawn nowhere, still tappable.
@@ -155,7 +195,7 @@ fun TodayScreen(
                     span(forecast.cycleLength, forecast.cycleRange),
                     span(forecast.periodLength, forecast.periodRange),
                 ),
-                style = MaterialTheme.typography.labelSmall,
+                style = MaterialTheme.typography.bodySmall,
                 fontWeight = FontWeight.Normal,
             )
         }
@@ -167,11 +207,13 @@ fun TodayScreen(
             Spacer(Modifier.height(12.dp))
             TextMMD(
                 text = stringResource(R.string.today_back_up),
-                style = MaterialTheme.typography.labelSmall,
+                style = MaterialTheme.typography.bodySmall,
                 fontWeight = FontWeight.Normal,
+                textAlign = TextAlign.Center,
                 modifier = Modifier
-                    .clickable(onClick = onBackUp)
-                    .padding(horizontal = 16.dp, vertical = 4.dp),
+                    .heightIn(min = 48.dp)
+                    .clickable(role = Role.Button, onClick = onBackUp)
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
             )
         }
     }
@@ -188,7 +230,7 @@ fun TodayScreen(
  */
 @Composable
 private fun span(middle: Int, range: IntRange?): String =
-    if (range == null || range.first == range.last) stringResource(R.string.today_span_days, middle)
+    if (range == null || range.first == range.last) pluralStringResource(R.plurals.today_span_days, middle, middle)
     else stringResource(R.string.today_span_range_days, range.first, range.last)
 
 /**
@@ -245,7 +287,8 @@ private fun Action(label: String, onClick: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .border(width = 1.dp, color = Color.Black)
-            .clickable(onClick = onClick)
+            .heightIn(min = 48.dp)
+            .clickable(role = Role.Button, onClick = onClick)
             .padding(vertical = 14.dp),
     )
 }

@@ -1,6 +1,6 @@
 # Cycle — Privacy Policy
 
-Version 0.2.16. Last reviewed 23 October 2026.
+Version 0.2.17. Last reviewed 27 October 2026.
 
 ## The short version
 
@@ -54,6 +54,14 @@ The developer holds no data about you, so there is nothing to request from them,
 ## Children
 
 The app is suitable for all ages and does not knowingly collect anything from anyone, of any age, because it does not collect anything.
+
+## Terms
+
+This app is free software under the GNU General Public License v3. It comes with no warranty: use it at your own risk. The same text is in the app, under the small i on the Today screen, with the licence and a link to the source.
+
+## Not medical advice
+
+This app is a record-keeping aid, not medical advice. It does not diagnose, treat or replace a doctor or pharmacist. Its dates are estimates worked out from what you recorded. It is not contraception, and it is not a fertility or pregnancy test: do not rely on it to prevent or to plan a pregnancy.
 
 ## Changes
 

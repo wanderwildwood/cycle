@@ -1,6 +1,11 @@
 package com.wanderwildwood.cycle
 
+import com.wanderwildwood.cycle.data.BleedingDay
+import com.wanderwildwood.cycle.data.DayNote
+import com.wanderwildwood.cycle.data.Loaded
 import com.wanderwildwood.cycle.data.days
+import com.wanderwildwood.cycle.data.formatBackup
+import com.wanderwildwood.cycle.data.readFile
 import com.wanderwildwood.cycle.data.parsePeriodTrackerExport
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
@@ -79,5 +84,41 @@ class ImportTest {
         val out = parsePeriodTrackerExport("")
         assertTrue(out.periods.isEmpty())
         assertTrue(out.notes.isEmpty())
+    }
+}
+
+/** What a picked file is taken for. All the dates are invented. */
+class ReadFileTest {
+    @Test fun `garbage is unreadable`() {
+        assertEquals(Loaded.Unreadable, readFile("hello\nthis is not a record\n12345"))
+    }
+
+    @Test fun `an empty or missing file is unreadable`() {
+        assertEquals(Loaded.Unreadable, readFile(""))
+        assertEquals(Loaded.Unreadable, readFile("   \n"))
+        assertEquals(Loaded.Unreadable, readFile(null))
+    }
+
+    @Test fun `a period tracker export is read as one`() {
+        val out = readFile("Period Start\tMar 12, 2021\nPeriod End\tMar 15, 2021\n")
+        assertTrue(out is Loaded.FromExport)
+        assertEquals(1, (out as Loaded.FromExport).imported.periods.size)
+    }
+
+    @Test fun `a backup with nothing in it is unreadable`() {
+        val empty = formatBackup(emptyList(), emptyList(), LocalDate.parse("2021-03-20"))
+        assertEquals(Loaded.Unreadable, readFile(empty))
+    }
+
+    @Test fun `a backup is read as one and counts its days`() {
+        val text = formatBackup(
+            listOf(BleedingDay(LocalDate.parse("2021-03-12").toEpochDay(), 2, false),
+                BleedingDay(LocalDate.parse("2021-03-13").toEpochDay(), 3, false)),
+            listOf(DayNote(LocalDate.parse("2021-03-14").toEpochDay(), note = "swimming")),
+            LocalDate.parse("2021-03-20"),
+        )
+        val out = readFile(text)
+        assertTrue(out is Loaded.FromBackup)
+        assertEquals(3, (out as Loaded.FromBackup).days)
     }
 }

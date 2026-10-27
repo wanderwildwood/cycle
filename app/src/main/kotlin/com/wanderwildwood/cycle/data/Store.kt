@@ -131,6 +131,9 @@ class Store(private val dao: CycleDao) {
 
     suspend fun isEmpty(): Boolean = dao.count() == 0
 
+    /** How many days are marked, for saying how much a backup held. */
+    suspend fun dayCount(): Int = dao.count()
+
     suspend fun mark(day: LocalDate, intensity: Int = 2) =
         dao.mark(BleedingDay(day.toEpochDay(), intensity))
 

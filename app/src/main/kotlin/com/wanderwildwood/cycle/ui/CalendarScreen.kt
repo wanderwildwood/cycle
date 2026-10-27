@@ -11,6 +11,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -34,6 +38,7 @@ import java.time.format.TextStyle
 import java.time.temporal.WeekFields
 import java.util.Locale
 
+private val SpokenDate = DateTimeFormatter.ofPattern("EEEE d MMMM yyyy", Locale.getDefault())
 private val MonthAndYear = DateTimeFormatter.ofPattern("MMMM yyyy", Locale.getDefault())
 
 /**
@@ -55,6 +60,7 @@ fun CalendarScreen(
     onPreviousMonth: () -> Unit,
     onNextMonth: () -> Unit,
     onOpenDay: (LocalDate) -> Unit,
+    onThisMonth: () -> Unit,
     onBack: () -> Unit,
 ) {
     val predicted = predictedPeriod(forecast)
@@ -70,14 +76,24 @@ fun CalendarScreen(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Stepper("‹", onPreviousMonth)
+            Stepper("‹", stringResource(R.string.calendar_previous_month), onPreviousMonth)
+            // Pressing the month's name comes back to this month, so the way home from a long
+            // walk through the years is one press and not a closed screen.
             TextMMD(
                 text = month.atDay(1).format(MonthAndYear),
                 style = MaterialTheme.typography.bodyLarge,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.weight(1f),
+                modifier = Modifier
+                    .weight(1f)
+                    .heightIn(min = 48.dp)
+                    .clickable(
+                        role = Role.Button,
+                        onClickLabel = stringResource(R.string.calendar_this_month),
+                        onClick = onThisMonth,
+                    )
+                    .padding(top = 10.dp),
             )
-            Stepper("›", onNextMonth)
+            Stepper("›", stringResource(R.string.calendar_next_month), onNextMonth)
         }
 
         Spacer(Modifier.height(16.dp))
@@ -104,7 +120,7 @@ fun CalendarScreen(
                 for (day in week) {
                     Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
                         if (day == null) {
-                            Spacer(Modifier.size(44.dp))
+                            Spacer(Modifier.size(48.dp))
                         } else {
                             Day(
                                 day = day,
@@ -131,27 +147,29 @@ fun CalendarScreen(
         Spacer(Modifier.height(12.dp))
 
         TextMMD(
-            text = stringResource(R.string.calendar_today),
+            text = stringResource(R.string.calendar_done),
             style = MaterialTheme.typography.bodyMedium,
             textAlign = TextAlign.Center,
             modifier = Modifier
                 .fillMaxWidth()
+                .heightIn(min = 48.dp)
                 .border(width = 1.dp, color = Color.Black)
-                .clickable(onClick = onBack)
+                .clickable(role = Role.Button, onClick = onBack)
                 .padding(vertical = 12.dp),
         )
     }
 }
 
 @Composable
-private fun Stepper(glyph: String, onClick: () -> Unit) {
+private fun Stepper(glyph: String, description: String, onClick: () -> Unit) {
     TextMMD(
         text = glyph,
         style = MaterialTheme.typography.headlineLarge,
         textAlign = TextAlign.Center,
         modifier = Modifier
-            .size(44.dp)
-            .clickable(onClick = onClick)
+            .size(48.dp)
+            .semantics { contentDescription = description }
+            .clickable(role = Role.Button, onClick = onClick)
             .padding(top = 4.dp),
     )
 }
@@ -166,11 +184,21 @@ private fun Day(
     isOvulation: Boolean,
     onClick: (() -> Unit)?,
 ) {
+    // Said in words as well as drawn: the date, then whatever is true of it.
+    val states = buildList {
+        if (isToday) add(stringResource(R.string.calendar_day_today))
+        if (isMarked) add(stringResource(R.string.calendar_day_recorded))
+        if (isPredicted) add(stringResource(R.string.calendar_day_expected))
+        if (isFertile) add(stringResource(R.string.calendar_day_fertile))
+        if (isOvulation) add(stringResource(R.string.calendar_day_ovulation))
+    }
+    val spoken = (listOf(day.format(SpokenDate)) + states).joinToString(", ")
     Box(
         modifier = Modifier
-            .size(44.dp)
+            .size(48.dp)
+            .semantics(mergeDescendants = true) { contentDescription = spoken }
             .then(if (isToday) Modifier.border(1.dp, Color.Black) else Modifier)
-            .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier),
+            .then(if (onClick != null) Modifier.clickable(role = Role.Button, onClick = onClick) else Modifier),
         contentAlignment = Alignment.Center,
     ) {
         Box(
@@ -218,20 +246,20 @@ private fun Day(
 @Composable
 private fun Key() {
     Column(horizontalAlignment = Alignment.Start, modifier = Modifier.fillMaxWidth()) {
-        KeyRow(filled = true) { TextMMD(stringResource(R.string.calendar_key_recorded), style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Normal) }
-        KeyRow(filled = false) { TextMMD(stringResource(R.string.calendar_key_expected), style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Normal) }
+        KeyRow(filled = true) { TextMMD(stringResource(R.string.calendar_key_recorded), style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Normal) }
+        KeyRow(filled = false) { TextMMD(stringResource(R.string.calendar_key_expected), style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Normal) }
         Row(verticalAlignment = Alignment.CenterVertically) {
             Box(Modifier.size(18.dp), contentAlignment = Alignment.Center) {
                 Box(Modifier.size(width = 13.dp, height = 2.dp).background(Color.Black))
             }
             Spacer(Modifier.size(6.dp))
-            TextMMD(stringResource(R.string.calendar_key_fertile), style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Normal)
+            TextMMD(stringResource(R.string.calendar_key_fertile), style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Normal)
             Spacer(Modifier.size(14.dp))
             Box(Modifier.size(18.dp), contentAlignment = Alignment.Center) {
                 Box(Modifier.size(5.dp).background(Color.Black, CircleShape))
             }
             Spacer(Modifier.size(6.dp))
-            TextMMD(stringResource(R.string.calendar_key_ovulation), style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Normal)
+            TextMMD(stringResource(R.string.calendar_key_ovulation), style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Normal)
         }
     }
 }

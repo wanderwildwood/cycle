@@ -10,6 +10,8 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.platform.LocalCursorBlinkEnabled
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -25,9 +27,8 @@ import com.wanderwildwood.cycle.cycle.summary
 import com.wanderwildwood.cycle.data.CycleDatabase
 import com.wanderwildwood.cycle.data.DayNote
 import com.wanderwildwood.cycle.data.Store
-import com.wanderwildwood.cycle.data.looksLikeBackup
-import com.wanderwildwood.cycle.data.parseBackup
-import com.wanderwildwood.cycle.data.parsePeriodTrackerExport
+import com.wanderwildwood.cycle.data.Loaded
+import com.wanderwildwood.cycle.data.readFile
 import com.wanderwildwood.cycle.ui.CalendarScreen
 import com.wanderwildwood.cycle.ui.CycleTheme
 import com.wanderwildwood.cycle.ui.DayScreen
@@ -57,8 +58,11 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            CycleTheme {
-                App()
+            // A blinking cursor is a repaint twice a second on an e-ink panel, for nothing.
+            CompositionLocalProvider(LocalCursorBlinkEnabled provides false) {
+                CycleTheme {
+                    App()
+                }
             }
         }
     }
@@ -77,23 +81,38 @@ private fun App() {
     var empty by remember { mutableStateOf(false) }
     LaunchedEffect(days.size) { empty = store.isEmpty() }
 
+    // What the last import or backup did, in words; cleared after a few seconds or on a press.
+    var notice by remember { mutableStateOf<String?>(null) }
+
     // Reading a document you pick needs no permission of any kind: the picker hands back a URI
     // that is already granted. This is the whole reason the import works without a manifest line.
     val pick = rememberLauncherForActivityResult(
         ActivityResultContracts.OpenDocument()
     ) { uri: Uri? ->
         if (uri != null) scope.launch {
-            withContext(Dispatchers.IO) {
-                val text = context.contentResolver.openInputStream(uri)
-                    ?.bufferedReader()?.use { it.readText() }
-                // Either file you might be holding: one of our own backups, or a Period Tracker
-                // export. Sniffed rather than asked about — at the point this
-                // matters you are rebuilding a lost phone.
-                if (text != null) {
-                    if (looksLikeBackup(text)) store.restore(parseBackup(text))
-                    else store.take(parsePeriodTrackerExport(text))
-                }
+            val res = context.resources
+            val message = withContext(Dispatchers.IO) {
+                runCatching {
+                    val text = context.contentResolver.openInputStream(uri)
+                        ?.bufferedReader()?.use { it.readText() }
+                    // Either file you might be holding: one of our own backups, or a Period Tracker
+                    // export. Sniffed rather than asked about -- at the point this
+                    // matters you are rebuilding a lost phone.
+                    when (val loaded = readFile(text)) {
+                        is Loaded.FromBackup -> {
+                            store.restore(loaded.backup)
+                            res.getQuantityString(R.plurals.notice_restored, loaded.days, loaded.days)
+                        }
+                        is Loaded.FromExport -> {
+                            store.take(loaded.imported)
+                            val n = loaded.imported.periods.size
+                            res.getQuantityString(R.plurals.notice_imported, n, n)
+                        }
+                        Loaded.Unreadable -> res.getString(R.string.notice_unreadable)
+                    }
+                }.getOrElse { res.getString(R.string.notice_import_failed) }
             }
+            notice = message
         }
     }
 
@@ -104,9 +123,15 @@ private fun App() {
         ActivityResultContracts.CreateDocument("text/plain")
     ) { uri: Uri? ->
         if (uri != null) writes.launch {
-            val text = store.backup(LocalDate.now())
-            context.contentResolver.openOutputStream(uri)
-                ?.bufferedWriter()?.use { it.write(text) }
+            val res = context.resources
+            notice = runCatching {
+                val text = store.backup(LocalDate.now())
+                val days = store.dayCount()
+                val out = context.contentResolver.openOutputStream(uri)
+                    ?: error("no output stream")
+                out.bufferedWriter().use { it.write(text) }
+                res.getQuantityString(R.plurals.notice_backed_up, days, days)
+            }.getOrElse { res.getString(R.string.notice_backup_failed) }
         }
     }
 
@@ -150,6 +175,7 @@ private fun App() {
             // screen, where it is the thing you came to do; on the calendar a stray tap while
             // paging months would otherwise write to your record with nothing to show it happened.
             onOpenDay = { day -> openDay = day },
+            onThisMonth = { month = YearMonth.from(today) },
             onBack = { showingCalendar = false },
         )
         return
@@ -178,6 +204,8 @@ private fun App() {
         onImport = { pick.launch(arrayOf("text/plain", "text/*", "*/*")) },
         offerBackup = !empty,
         onBackUp = { save.launch("cycle-backup-$today.txt") },
+        notice = notice,
+        onDismissNotice = { notice = null },
     )
 }
 

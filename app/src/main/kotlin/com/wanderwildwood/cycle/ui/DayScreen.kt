@@ -13,6 +13,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.toggleable
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -142,7 +147,7 @@ fun DayScreen(
             text = day.format(DayHeading),
             style = MaterialTheme.typography.bodyMedium,
             textAlign = TextAlign.Center,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().semantics { heading() },
         )
 
         Spacer(Modifier.height(14.dp))
@@ -175,6 +180,7 @@ fun DayScreen(
                                     chosen = intensity == index + 1,
                                     onClick = { onSetIntensity(index + 1) },
                                     modifier = Modifier.weight(1f),
+                                    radio = true,
                                 )
                             }
                         }
@@ -250,8 +256,9 @@ fun DayScreen(
             textAlign = TextAlign.Center,
             modifier = Modifier
                 .fillMaxWidth()
+                .heightIn(min = 48.dp)
                 .border(width = 1.dp, color = Color.Black)
-                .clickable(onClick = onBack)
+                .clickable(role = Role.Button, onClick = onBack)
                 .padding(vertical = 12.dp),
         )
     }
@@ -259,7 +266,11 @@ fun DayScreen(
 
 @Composable
 private fun Heading(text: String) {
-    TextMMD(text = text, style = MaterialTheme.typography.labelSmall)
+    TextMMD(
+        text = text,
+        style = MaterialTheme.typography.bodySmall,
+        modifier = Modifier.semantics { heading() },
+    )
     Spacer(Modifier.height(6.dp))
 }
 
@@ -326,7 +337,7 @@ private fun Tags(
                 keyboardActions = KeyboardActions(onDone = { commit() }),
                 modifier = Modifier
                     .weight(1f)
-                    .heightIn(min = 44.dp)
+                    .heightIn(min = 48.dp)
                     .border(1.dp, Color.Black)
                     .padding(horizontal = 10.dp, vertical = 10.dp),
             )
@@ -349,15 +360,21 @@ private fun Choice(
     chosen: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    radio: Boolean = false,
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,
         modifier = modifier
-            .heightIn(min = 44.dp)
+            .heightIn(min = 48.dp)
             .border(1.dp, Color.Black)
             .then(if (chosen) Modifier.background(Color.Black) else Modifier)
-            .clickable(onClick = onClick)
+            // Said to a screen reader as what it is: a choice of one (selectable), or a box that is
+            // on or off (toggleable), not a bare press.
+            .then(
+                if (radio) Modifier.selectable(selected = chosen, role = Role.RadioButton, onClick = onClick)
+                else Modifier.toggleable(value = chosen, role = Role.Checkbox, onValueChange = { onClick() })
+            )
             // 8dp, not 12: three of these share a row at 480px, and at 12 "Medium" broke
             // across two lines as "Mediu/m".
             .padding(horizontal = 8.dp),
