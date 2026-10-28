@@ -14,7 +14,6 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.Role
 import android.net.Uri
 import android.widget.Toast
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -26,14 +25,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import com.mudita.mmd.components.text.TextMMD
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -196,10 +194,8 @@ private fun Body(text: String) {
 }
 
 /**
- * The way in: a small `i` where every other app of mine puts it.
- *
- * Drawn rather than shipped as an asset, because it is two circles and a line and a drawable
- * would be a file to keep in step with the ink colour.
+ * The way in: a small `i` where every other app of mine puts it: the Material Symbols Info,
+ * 22 dp in a 48 dp target.
  */
 @Composable
 fun AboutMark(onClick: () -> Unit, modifier: Modifier = Modifier) {
@@ -209,18 +205,11 @@ fun AboutMark(onClick: () -> Unit, modifier: Modifier = Modifier) {
             .clickable(role = Role.Button, onClickLabel = stringResource(R.string.about_label), onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {
-        Canvas(modifier = Modifier.size(18.dp)) {
-            val stroke = 1.5.dp.toPx()
-            val radius = size.minDimension / 2f - stroke / 2f
-            val middle = Offset(size.width / 2f, size.height / 2f)
-            drawCircle(Color.Black, radius = radius, center = middle, style = Stroke(stroke))
-            drawCircle(Color.Black, radius = stroke * 0.75f, center = Offset(middle.x, size.height * 0.28f))
-            drawLine(
-                Color.Black,
-                Offset(middle.x, size.height * 0.45f),
-                Offset(middle.x, size.height * 0.74f),
-                stroke,
-            )
-        }
+        Icon(
+            imageVector = Icons.Info,
+            contentDescription = null,
+            tint = Color.Black,
+            modifier = Modifier.size(22.dp),
+        )
     }
 }
