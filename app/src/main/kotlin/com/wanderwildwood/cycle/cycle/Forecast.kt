@@ -37,7 +37,42 @@ data class Forecast(
      */
     val cycleRange: IntRange? = null,
     val periodRange: IntRange? = null,
+    /** True when [ovulation] and [fertile] come from a positive ovulation test, not the calendar. */
+    val ovulationConfirmed: Boolean = false,
+    /** Earlier cycles that have a positive test, oldest first, for the calendar to draw. */
+    val pastOvulations: List<Ovulation> = emptyList(),
 )
+
+/** An ovulation day and fertile window worked out from a positive ovulation test. */
+data class Ovulation(val day: LocalDate, val fertile: ClosedRange<LocalDate>)
+
+/** The fertile window around an ovulation day. */
+fun fertileAround(ovulation: LocalDate): ClosedRange<LocalDate> =
+    ovulation.minusDays(FERTILE_BEFORE)..ovulation.plusDays(FERTILE_AFTER)
+
+/**
+ * Ovulation as the positive ovulation tests place it: the day after the first positive in each
+ * cycle (a surge shows for a day or two, and the first is the one that times it).
+ *
+ * Cycles are the runs between period starts; a positive before the first recorded period belongs
+ * to no cycle and is left out, as is anything later than [today].
+ */
+fun confirmedOvulations(
+    periods: List<Period>,
+    positives: Collection<LocalDate>,
+    today: LocalDate,
+): Map<LocalDate, Ovulation> {
+    val usable = positives.filter { !it.isAfter(today) }.sorted()
+    val out = linkedMapOf<LocalDate, Ovulation>()
+    periods.forEachIndexed { i, p ->
+        val next = periods.getOrNull(i + 1)?.start
+        val first = usable.firstOrNull { !it.isBefore(p.start) && (next == null || it.isBefore(next)) }
+            ?: return@forEachIndexed
+        val ovulation = first.plusDays(1)
+        out[p.start] = Ovulation(ovulation, fertileAround(ovulation))
+    }
+    return out
+}
 
 /** The span of a set of measurements, or null when there is nothing to compare. */
 internal fun List<Int>.spread(): IntRange? =
@@ -107,6 +142,7 @@ fun forecast(
     days: Collection<LocalDate>,
     today: LocalDate,
     unknownLengthStarts: Set<LocalDate> = emptySet(),
+    positiveTests: Collection<LocalDate> = emptyList(),
 ): Forecast {
     val periods = periodsFrom(days)
 
@@ -124,8 +160,10 @@ fun forecast(
 
     val lastStart = periods.lastOrNull()?.start
     val nextStart = lastStart?.plusDays(cycleLength.toLong())
-    val ovulation = nextStart?.minusDays(LUTEAL_DAYS)
-    val fertile = ovulation?.let { it.minusDays(FERTILE_BEFORE)..it.plusDays(FERTILE_AFTER) }
+    val confirmed = confirmedOvulations(periods, positiveTests, today)
+    val current = lastStart?.let { confirmed[it] }
+    val ovulation = current?.day ?: nextStart?.minusDays(LUTEAL_DAYS)
+    val fertile = current?.fertile ?: ovulation?.let { fertileAround(it) }
 
     return Forecast(
         periods = periods,
@@ -139,6 +177,8 @@ fun forecast(
         estimated = recentGaps.isEmpty(),
         cycleRange = recentGaps.spread(),
         periodRange = recentLengths.spread(),
+        ovulationConfirmed = current != null,
+        pastOvulations = confirmed.filterKeys { it != lastStart }.values.toList(),
     )
 }
 

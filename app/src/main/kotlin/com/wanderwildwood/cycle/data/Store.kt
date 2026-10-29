@@ -11,6 +11,8 @@ import androidx.room.PrimaryKey
 import androidx.room.Query
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import java.time.LocalDate
@@ -49,11 +51,21 @@ data class DayNote(
     @ColumnInfo(name = "symptoms") val symptoms: String = "",
     @ColumnInfo(name = "intimacy") val intimacy: Boolean = false,
     @ColumnInfo(name = "note") val note: String = "",
+    /** One of [MUCUS_VALUES], or empty for none recorded. */
+    @ColumnInfo(name = "mucus", defaultValue = "''") val mucus: String = "",
+    /** [TEST_POSITIVE] or [TEST_NEGATIVE], or empty for no test logged. */
+    @ColumnInfo(name = "ovulation_test", defaultValue = "''") val ovulationTest: String = "",
 ) {
     /** Nothing recorded but the date, which is not worth a row. */
     fun isEmpty(): Boolean =
-        moods.isBlank() && symptoms.isBlank() && !intimacy && note.isBlank()
+        moods.isBlank() && symptoms.isBlank() && !intimacy && note.isBlank() &&
+            mucus.isBlank() && ovulationTest.isBlank()
 }
+
+/** The stored words for cervical mucus; what is shown comes from strings.xml. */
+val MUCUS_VALUES = listOf("egg whites", "watery", "creamy/sticky")
+const val TEST_POSITIVE = "positive"
+const val TEST_NEGATIVE = "negative"
 
 @Dao
 interface CycleDao {
@@ -79,6 +91,9 @@ interface CycleDao {
     suspend fun allBleeding(): List<BleedingDay>
 
     @Query("SELECT * FROM notes ORDER BY day")
+    fun notes(): Flow<List<DayNote>>
+
+    @Query("SELECT * FROM notes ORDER BY day")
     suspend fun allNotes(): List<DayNote>
 
     @Query("DELETE FROM bleeding WHERE day = :day")
@@ -94,11 +109,19 @@ interface CycleDao {
     suspend fun clearNote(day: Long)
 }
 
-@Database(entities = [BleedingDay::class, DayNote::class], version = 1, exportSchema = false)
+@Database(entities = [BleedingDay::class, DayNote::class], version = 2, exportSchema = false)
 abstract class CycleDatabase : RoomDatabase() {
     abstract fun dao(): CycleDao
 
     companion object {
+        /** Version 2 added the cervical mucus and ovulation test columns; old rows get none. */
+        val MIGRATION_1_2 = object : Migration(1, 2) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE notes ADD COLUMN mucus TEXT NOT NULL DEFAULT ''")
+                db.execSQL("ALTER TABLE notes ADD COLUMN ovulation_test TEXT NOT NULL DEFAULT ''")
+            }
+        }
+
         @Volatile private var instance: CycleDatabase? = null
 
         fun of(context: Context): CycleDatabase = instance ?: synchronized(this) {
@@ -106,7 +129,7 @@ abstract class CycleDatabase : RoomDatabase() {
                 context.applicationContext,
                 CycleDatabase::class.java,
                 "cycle.db",
-            ).build().also { instance = it }
+            ).addMigrations(MIGRATION_1_2).build().also { instance = it }
         }
     }
 }
@@ -127,6 +150,18 @@ class Store(private val dao: CycleDao) {
     val unknownLengthStarts: Flow<Set<LocalDate>> =
         dao.bleedingDays().map { rows ->
             rows.filter { it.lengthUnknown }.map { LocalDate.ofEpochDay(it.day) }.toSet()
+        }
+
+    /** Days with anything recorded besides bleeding, for the calendar's underline. */
+    val recordedDays: Flow<Set<LocalDate>> =
+        dao.notes().map { rows ->
+            rows.filterNot { it.isEmpty() }.map { LocalDate.ofEpochDay(it.day) }.toSet()
+        }
+
+    /** Days with a positive ovulation test, for the fertile window. */
+    val positiveTests: Flow<List<LocalDate>> =
+        dao.notes().map { rows ->
+            rows.filter { it.ovulationTest == TEST_POSITIVE }.map { LocalDate.ofEpochDay(it.day) }
         }
 
     suspend fun isEmpty(): Boolean = dao.count() == 0

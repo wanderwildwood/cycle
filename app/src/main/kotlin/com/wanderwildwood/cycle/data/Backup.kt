@@ -70,6 +70,8 @@ fun formatBackup(days: List<BleedingDay>, notes: List<DayNote>, made: LocalDate)
                 ?.let { out.append("moods ").append(it.joinToString(", ")).append('\n') }
             tagsOf(note.symptoms).takeIf { it.isNotEmpty() }
                 ?.let { out.append("symptoms ").append(it.joinToString(", ")).append('\n') }
+            if (note.mucus.isNotBlank()) out.append("mucus ").append(note.mucus).append('\n')
+            if (note.ovulationTest.isNotBlank()) out.append("ovulation test ").append(note.ovulationTest).append('\n')
             if (note.intimacy) out.append("intimacy\n")
             if (note.note.isNotBlank()) {
                 out.append("note\n")
@@ -109,6 +111,8 @@ fun parseBackup(text: String): Backup {
     var moods = ""
     var symptoms = ""
     var intimacy = false
+    var mucus = ""
+    var ovulationTest = ""
     val note = mutableListOf<String>()
     var inNote = false
 
@@ -118,7 +122,7 @@ fun parseBackup(text: String): Backup {
             days += BleedingDay(current.toEpochDay(), it, lengthUnknown)
         }
         val free = note.joinToString("\n").trim('\n')
-        val row = DayNote(current.toEpochDay(), moods, symptoms, intimacy, free)
+        val row = DayNote(current.toEpochDay(), moods, symptoms, intimacy, free, mucus, ovulationTest)
         if (!row.isEmpty()) notes += row
 
         day = null
@@ -127,6 +131,8 @@ fun parseBackup(text: String): Backup {
         moods = ""
         symptoms = ""
         intimacy = false
+        mucus = ""
+        ovulationTest = ""
         note.clear()
         inNote = false
     }
@@ -163,6 +169,11 @@ fun parseBackup(text: String): Backup {
                 moods = splitTags(line.removePrefix("moods")).distinct().joinToString("\n")
             line.startsWith("symptoms") ->
                 symptoms = splitTags(line.removePrefix("symptoms")).distinct().joinToString("\n")
+            line.startsWith("mucus") ->
+                mucus = line.removePrefix("mucus").trim().lowercase().takeIf { it in MUCUS_VALUES } ?: ""
+            line.startsWith("ovulation test") ->
+                ovulationTest = line.removePrefix("ovulation test").trim().lowercase()
+                    .takeIf { it == TEST_POSITIVE || it == TEST_NEGATIVE } ?: ""
             line == "intimacy" -> intimacy = true
             line == "note" -> inNote = true
         }

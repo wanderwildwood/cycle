@@ -98,16 +98,18 @@
     <string name="calendar_next_month">Next month</string>
     <!-- Spoken for a day cell: %1$s is the date, then the state words below are appended -->
     <string name="calendar_day_today">today</string>
+    <string name="calendar_day_data">data recorded</string>
     <string name="calendar_day_recorded">period recorded</string>
     <string name="calendar_day_expected">period expected</string>
     <string name="calendar_day_fertile">fertile</string>
     <string name="calendar_day_ovulation">ovulation</string>
     <!-- The key under the month: what each mark means -->
     <!-- A filled circle: a bleeding day that was recorded -->
-    <string name="calendar_key_recorded">Recorded</string>
+    <string name="calendar_key_data">Data recorded</string>
+    <string name="calendar_key_recorded">Period</string>
     <!-- An outlined circle: a day the next period is expected -->
     <string name="calendar_key_expected">Expected</string>
-    <string name="calendar_key_fertile">Fertile</string>
+    <string name="calendar_key_fertile">Fertile window</string>
     <string name="calendar_key_ovulation">Ovulation</string>
 
     <!-- ============================================================ -->
@@ -148,6 +150,14 @@
     <!-- Restless, unable to settle -->
     <string name="day_symptom_restless">Restless</string>
     <!-- A toggle: sex on this day -->
+    <string name="day_heading_mucus">Cervical mucus</string>
+    <string name="day_mucus_none">None</string>
+    <string name="day_mucus_eggwhite">Egg whites</string>
+    <string name="day_mucus_watery">Watery</string>
+    <string name="day_mucus_creamy">Creamy/sticky</string>
+    <string name="day_heading_ovtest">Ovulation test</string>
+    <string name="day_test_positive">Positive</string>
+    <string name="day_test_negative">Negative</string>
     <string name="day_intimacy">Intimacy</string>
     <!-- Section heading (noun) -->
     <string name="day_heading_note">Note</string>

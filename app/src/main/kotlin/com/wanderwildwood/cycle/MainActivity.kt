@@ -77,6 +77,8 @@ private fun App() {
     val days by store.days.collectAsState(initial = emptyList())
     val unknownLengths by store.unknownLengthStarts.collectAsState(initial = emptySet())
     val intensities by store.intensities.collectAsState(initial = emptyMap())
+    val recorded by store.recordedDays.collectAsState(initial = emptySet())
+    val positives by store.positiveTests.collectAsState(initial = emptyList())
 
     var empty by remember { mutableStateOf(false) }
     LaunchedEffect(days.size) { empty = store.isEmpty() }
@@ -138,7 +140,7 @@ private fun App() {
     // Read once per composition: the app is opened, read and closed.
     val today = LocalDate.now()
     val bleedingToday = today in days
-    val outlook = forecast(days, today, unknownLengths)
+    val outlook = forecast(days, today, unknownLengths, positives)
 
     var showingCalendar by remember { mutableStateOf(false) }
     var month by remember { mutableStateOf(YearMonth.from(today)) }
@@ -168,6 +170,7 @@ private fun App() {
             month = month,
             today = today,
             marked = days.toSet(),
+            recorded = recorded,
             forecast = outlook,
             onPreviousMonth = { month = month.minusMonths(1) },
             onNextMonth = { month = month.plusMonths(1) },

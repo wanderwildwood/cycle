@@ -43,6 +43,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.wanderwildwood.cycle.R
 import com.wanderwildwood.cycle.data.DayNote
+import com.wanderwildwood.cycle.data.MUCUS_VALUES
+import com.wanderwildwood.cycle.data.TEST_NEGATIVE
+import com.wanderwildwood.cycle.data.TEST_POSITIVE
 import com.wanderwildwood.cycle.data.cleanTag
 import com.wanderwildwood.cycle.data.tagString
 import com.wanderwildwood.cycle.data.tagsOf
@@ -90,6 +93,9 @@ private val TAG_WORDS = mapOf(
     "Restless" to R.string.day_symptom_restless,
 )
 
+/** How each stored [MUCUS_VALUES] entry is shown, in the same order. */
+private val MUCUS_WORDS = listOf(R.string.day_mucus_eggwhite, R.string.day_mucus_watery, R.string.day_mucus_creamy)
+
 /** What the three intensity buttons say, in order; the stored value is the index plus one. */
 private val INTENSITIES = listOf(R.string.day_intensity_light, R.string.day_intensity_medium, R.string.day_intensity_heavy)
 
@@ -124,6 +130,8 @@ fun DayScreen(
     }
     var intimacy by remember(day, stored) { mutableStateOf(stored?.intimacy ?: false) }
     var note by remember(day, stored) { mutableStateOf(stored?.note.orEmpty()) }
+    var mucus by remember(day, stored) { mutableStateOf(stored?.mucus.orEmpty()) }
+    var ovTest by remember(day, stored) { mutableStateOf(stored?.ovulationTest.orEmpty()) }
 
     val latest = rememberUpdatedState(
         DayNote(
@@ -132,6 +140,8 @@ fun DayScreen(
             symptoms = tagString(symptoms, SYMPTOMS),
             intimacy = intimacy,
             note = note,
+            mucus = mucus,
+            ovulationTest = ovTest,
         )
     )
     val save by rememberUpdatedState(onSave)
@@ -219,6 +229,57 @@ fun DayScreen(
             }
             item {
                 Spacer(Modifier.height(18.dp))
+            }
+            if (day <= today) {
+                item {
+                    Column {
+                        Heading(stringResource(R.string.day_heading_mucus))
+                        FlowRow(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                            modifier = Modifier.fillMaxWidth(),
+                        ) {
+                            Choice(
+                                label = stringResource(R.string.day_mucus_none),
+                                chosen = mucus.isEmpty(),
+                                onClick = { mucus = "" },
+                                radio = true,
+                            )
+                            MUCUS_VALUES.forEachIndexed { i, value ->
+                                Choice(
+                                    label = stringResource(MUCUS_WORDS[i]),
+                                    chosen = mucus == value,
+                                    onClick = { mucus = value },
+                                    radio = true,
+                                )
+                            }
+                        }
+                    }
+                }
+                item { Spacer(Modifier.height(18.dp)) }
+                item {
+                    Column {
+                        Heading(stringResource(R.string.day_heading_ovtest))
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            // Tapping the chosen one again takes the test off the day.
+                            Choice(
+                                label = stringResource(R.string.day_test_positive),
+                                chosen = ovTest == TEST_POSITIVE,
+                                onClick = { ovTest = if (ovTest == TEST_POSITIVE) "" else TEST_POSITIVE },
+                                modifier = Modifier.weight(1f),
+                                radio = true,
+                            )
+                            Choice(
+                                label = stringResource(R.string.day_test_negative),
+                                chosen = ovTest == TEST_NEGATIVE,
+                                onClick = { ovTest = if (ovTest == TEST_NEGATIVE) "" else TEST_NEGATIVE },
+                                modifier = Modifier.weight(1f),
+                                radio = true,
+                            )
+                        }
+                    }
+                }
+                item { Spacer(Modifier.height(18.dp)) }
             }
             item {
                 Choice(

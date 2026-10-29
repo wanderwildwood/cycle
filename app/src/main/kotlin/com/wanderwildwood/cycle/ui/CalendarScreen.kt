@@ -23,7 +23,11 @@ import com.mudita.mmd.components.text.TextMMD
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -56,6 +60,7 @@ fun CalendarScreen(
     month: YearMonth,
     today: LocalDate,
     marked: Set<LocalDate>,
+    recorded: Set<LocalDate>,
     forecast: Forecast,
     onPreviousMonth: () -> Unit,
     onNextMonth: () -> Unit,
@@ -64,7 +69,11 @@ fun CalendarScreen(
     onBack: () -> Unit,
 ) {
     val predicted = predictedPeriod(forecast)
-    val fertile = forecast.fertile
+    // The window for this cycle (predicted, or placed by a positive test) and for earlier cycles
+    // that had a positive test.
+    val windows = listOfNotNull(forecast.fertile) + forecast.pastOvulations.map { it.fertile }
+    val ovulations = listOfNotNull(forecast.ovulation) + forecast.pastOvulations.map { it.day }
+    fun inWindow(d: LocalDate?) = d != null && windows.any { d in it }
 
     Column(
         modifier = Modifier
@@ -117,7 +126,7 @@ fun CalendarScreen(
 
         for (week in weeksOf(month, firstDay)) {
             Row(Modifier.fillMaxWidth()) {
-                for (day in week) {
+                week.forEachIndexed { column, day ->
                     Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
                         if (day == null) {
                             Spacer(Modifier.size(48.dp))
@@ -127,8 +136,13 @@ fun CalendarScreen(
                                 isToday = day == today,
                                 isMarked = day in marked,
                                 isPredicted = predicted?.contains(day) == true,
-                                isFertile = fertile?.contains(day) == true,
-                                isOvulation = day == forecast.ovulation,
+                                hasData = day in recorded,
+                                isFertile = inWindow(day),
+                                // The box is open between neighbours in the same row, so a
+                                // window reads as one box (one per row where it wraps).
+                                edgeLeft = column == 0 || !inWindow(day.minusDays(1)),
+                                edgeRight = column == 6 || !inWindow(day.plusDays(1)),
+                                isOvulation = day in ovulations,
                                 // Every day opens, including ones still to come — the rule that a
                                 // day you have not lived yet cannot be marked as bleeding is
                                 // enforced on the day screen, where it is the one that applies.
@@ -180,7 +194,10 @@ private fun Day(
     isToday: Boolean,
     isMarked: Boolean,
     isPredicted: Boolean,
+    hasData: Boolean,
     isFertile: Boolean,
+    edgeLeft: Boolean,
+    edgeRight: Boolean,
     isOvulation: Boolean,
     onClick: (() -> Unit)?,
 ) {
@@ -189,6 +206,7 @@ private fun Day(
         if (isToday) add(stringResource(R.string.calendar_day_today))
         if (isMarked) add(stringResource(R.string.calendar_day_recorded))
         if (isPredicted) add(stringResource(R.string.calendar_day_expected))
+        if (hasData) add(stringResource(R.string.calendar_day_data))
         if (isFertile) add(stringResource(R.string.calendar_day_fertile))
         if (isOvulation) add(stringResource(R.string.calendar_day_ovulation))
     }
@@ -197,6 +215,7 @@ private fun Day(
         modifier = Modifier
             .size(48.dp)
             .semantics(mergeDescendants = true) { contentDescription = spoken }
+            .then(if (isFertile) Modifier.dottedBox(edgeLeft, edgeRight) else Modifier)
             .then(if (isToday) Modifier.border(1.dp, Color.Black) else Modifier)
             .then(if (onClick != null) Modifier.clickable(role = Role.Button, onClick = onClick) else Modifier),
         contentAlignment = Alignment.Center,
@@ -217,31 +236,42 @@ private fun Day(
                 text = day.dayOfMonth.toString(),
                 style = MaterialTheme.typography.labelSmall,
                 color = if (isMarked) Color.White else Color.Black,
+                // Anything logged besides bleeding: the date is underlined.
+                textDecoration = if (hasData) TextDecoration.Underline else null,
             )
         }
 
-        // Fertile is a bar, ovulation is a dot.
-        //
-        // These were a hollow ring and a filled one to begin with, and at the size a mark under a
-        // date can be, the ring's own outline closes it up: on the panel both drew as the same
-        // black dot. Two marks that differ in shape survive being three pixels across; two that
-        // differ only in fill do not.
-        if (isFertile || isOvulation) {
+        // Ovulation is a dot under the date; the fertile window is the dotted box around its days.
+        if (isOvulation) {
             Box(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
-                    .padding(bottom = 3.dp)
-                    .then(
-                        if (isOvulation) Modifier.size(5.dp).background(Color.Black, CircleShape)
-                        else Modifier.size(width = 13.dp, height = 2.dp).background(Color.Black)
-                    ),
+                    .padding(bottom = 6.dp)
+                    .size(5.dp)
+                    .background(Color.Black, CircleShape),
             )
         }
     }
 }
 
 /**
- * A key, because three of these marks are not guessable.
+ * A dotted outline: top and bottom always, and a side only where the window starts or ends in
+ * this row. Drawn in the day's own 48 dp cell, so neighbours join into one box.
+ */
+private fun Modifier.dottedBox(left: Boolean, right: Boolean): Modifier = drawBehind {
+    val stroke = 2.dp.toPx()
+    val dash = PathEffect.dashPathEffect(floatArrayOf(3.dp.toPx(), 3.dp.toPx()))
+    val inset = stroke / 2
+    fun line(x1: Float, y1: Float, x2: Float, y2: Float) =
+        drawLine(Color.Black, Offset(x1, y1), Offset(x2, y2), strokeWidth = stroke, pathEffect = dash)
+    line(0f, inset, size.width, inset)
+    line(0f, size.height - inset, size.width, size.height - inset)
+    if (left) line(inset, 0f, inset, size.height)
+    if (right) line(size.width - inset, 0f, size.width - inset, size.height)
+}
+
+/**
+ * A key, because several of these marks are not guessable.
  */
 @Composable
 private fun Key() {
@@ -249,9 +279,13 @@ private fun Key() {
         KeyRow(filled = true) { TextMMD(stringResource(R.string.calendar_key_recorded), style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Normal) }
         KeyRow(filled = false) { TextMMD(stringResource(R.string.calendar_key_expected), style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Normal) }
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Box(Modifier.size(18.dp), contentAlignment = Alignment.Center) {
-                Box(Modifier.size(width = 13.dp, height = 2.dp).background(Color.Black))
-            }
+            TextMMD("12", style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Normal, textDecoration = TextDecoration.Underline, textAlign = TextAlign.Center, modifier = Modifier.size(18.dp))
+            Spacer(Modifier.size(6.dp))
+            TextMMD(stringResource(R.string.calendar_key_data), style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Normal)
+        }
+        Spacer(Modifier.height(3.dp))
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Box(Modifier.size(width = 22.dp, height = 18.dp).dottedBox(left = true, right = true))
             Spacer(Modifier.size(6.dp))
             TextMMD(stringResource(R.string.calendar_key_fertile), style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Normal)
             Spacer(Modifier.size(14.dp))
