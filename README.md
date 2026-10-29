@@ -7,7 +7,7 @@ so what is recorded here has no mechanism by which to leave the phone.
 
 | | |
 |---|---|
-| ![Today](screenshots/1-today.png) | ![The calendar: recorded days, fertile days and ovulation](screenshots/2-calendar.png) |
+| ![Today](screenshots/1-today.png) | ![The calendar: period days, days with data, the fertile window and ovulation](screenshots/2-calendar.png) |
 | ![One day](screenshots/3-day.png) | ![The same day: symptoms and a note](screenshots/4-day-notes.png) |
 
 ## Where it came from

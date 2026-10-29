@@ -14,7 +14,7 @@ Because no personal data is transmitted to or held by the developer, there is no
 
 ## What the app stores, and where
 
-Only what you enter: the days you mark as a period, with how heavy (light, medium or heavy); and, for any day, the moods and symptoms you pick, whether you marked it as intimate, and a note you type. This is health data, and it is treated as such: it is written only to a database in the app's own private storage on this phone. The app's settings are kept there too.
+Only what you enter: the days you mark as a period, with how heavy (light, medium or heavy); and, for any day, the moods and symptoms you pick, cervical mucus and an ovulation test result if you log them, whether you marked it as intimate, and a note you type. This is health data, and it is treated as such: it is written only to a database in the app's own private storage on this phone. The app's settings are kept there too.
 
 The manifest sets `allowBackup="false"`, so Android does not copy any of it into a device backup or a cloud backup. Uninstalling the app deletes it. There is no cloud copy and no copy held by the developer.
 
