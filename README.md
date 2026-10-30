@@ -1,6 +1,6 @@
 # Cycle
 
-A cycle tracker for the Mudita Kompakt. Written from scratch.
+A cycle tracker for the Mudita Kompakt. Written from scratch. You mark each day of a period yourself, add mood, symptoms, cervical mucus, an ovulation test or a note to any day, and a calendar shows the expected next period, the fertile window and ovulation as estimates. It is a record-keeping aid, not medical advice.
 
 It has no permissions. There is no `INTERNET` line in the manifest and there is not going to be,
 so what is recorded here has no mechanism by which to leave the phone.
