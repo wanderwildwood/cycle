@@ -55,6 +55,8 @@ fun AboutScreen(onDismiss: () -> Unit) {
     val context = LocalContext.current
     BackHandler(onBack = onDismiss)
     val licence = remember { licenceParagraphs(context.resources) }
+    val apache = remember { licenceParagraphs(context.resources, R.raw.apache_2_0) }
+    val ofl = remember { licenceParagraphs(context.resources, R.raw.ofl_1_1) }
 
     Column(
         modifier = Modifier
@@ -105,6 +107,12 @@ fun AboutScreen(onDismiss: () -> Unit) {
             item { Spacer(Modifier.height(18.dp)) }
             item { Heading(stringResource(R.string.about_licence_heading)) }
             items(licence) { Body(it) }
+            item { Spacer(Modifier.height(18.dp)) }
+            item { Heading(stringResource(R.string.about_apache_heading)) }
+            items(apache) { Body(it) }
+            item { Spacer(Modifier.height(18.dp)) }
+            item { Heading(stringResource(R.string.about_ofl_heading)) }
+            items(ofl) { Body(it) }
         }
 
         Spacer(Modifier.height(8.dp))
@@ -128,8 +136,8 @@ private fun LazyListScope.section(title: Int, body: Int) {
 }
 
 /** The licence text as paragraphs: hard-wrapped lines joined, blank lines kept as breaks. */
-private fun licenceParagraphs(resources: Resources): List<String> =
-    resources.openRawResource(R.raw.gpl_3_0).bufferedReader().use { it.readText() }
+private fun licenceParagraphs(resources: Resources, raw: Int = R.raw.gpl_3_0): List<String> =
+    resources.openRawResource(raw).bufferedReader().use { it.readText() }
         .split(Regex("\n\\s*\n"))
         .map { block -> block.lines().joinToString(" ") { it.trim() }.trim() }
         .filter { it.isNotEmpty() }
@@ -149,11 +157,7 @@ private fun Link(text: String, description: String, url: String, llama: Boolean 
             .fillMaxWidth()
             .heightIn(min = 48.dp)
             .clickable(role = Role.Button, onClickLabel = description) {
-                runCatching {
-                    context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
-                }.onFailure {
-                    Toast.makeText(context, context.getString(R.string.about_no_browser), Toast.LENGTH_SHORT).show()
-                }
+                openLink(context, url, context.getString(R.string.about_no_browser_address, url.removePrefix("https://")))
             },
     ) {
         if (llama) {
@@ -204,6 +208,21 @@ fun AboutMark(onClick: () -> Unit, modifier: Modifier = Modifier) {
             contentDescription = null,
             tint = Color.Black,
             modifier = Modifier.size(22.dp),
+        )
+    }
+}
+
+/** The not-medical-advice words, shown once on first launch with a way to say they were read. */
+@Composable
+fun FirstRunNotice(onOk: () -> Unit) {
+    EInkDialog(onDismiss = {}) {
+        Heading(stringResource(R.string.about_medical_heading))
+        Body(stringResource(R.string.about_medical_body))
+        Spacer(Modifier.height(8.dp))
+        HouseButton(
+            label = stringResource(R.string.first_run_ok),
+            onClick = onOk,
+            modifier = Modifier.fillMaxWidth(),
         )
     }
 }

@@ -11,6 +11,14 @@
       necessary, that is the moment to stop and decide deliberately, not a detail to add.
     -->
 
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.BROWSABLE" />
+            <data android:scheme="https" />
+        </intent>
+    </queries>
+
     <application
         android:allowBackup="false"
         android:icon="@drawable/ic_launcher_mudita"

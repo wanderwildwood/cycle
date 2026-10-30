@@ -19,6 +19,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import com.wanderwildwood.cycle.cycle.Summary
@@ -32,6 +33,7 @@ import com.wanderwildwood.cycle.data.readFile
 import com.wanderwildwood.cycle.ui.CalendarScreen
 import com.wanderwildwood.cycle.ui.CycleTheme
 import com.wanderwildwood.cycle.ui.DayScreen
+import com.wanderwildwood.cycle.ui.FirstRunNotice
 import com.wanderwildwood.cycle.ui.TodayScreen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -142,9 +144,20 @@ private fun App() {
     val bleedingToday = today in days
     val outlook = forecast(days, today, unknownLengths, positives)
 
-    var showingCalendar by remember { mutableStateOf(false) }
-    var month by remember { mutableStateOf(YearMonth.from(today)) }
-    var openDay by remember { mutableStateOf<LocalDate?>(null) }
+    // Saved, so a font-size or language change does not drop the open day back to Today.
+    var showingCalendar by rememberSaveable { mutableStateOf(false) }
+    var month by rememberSaveable { mutableStateOf(YearMonth.from(today)) }
+    var openDay by rememberSaveable { mutableStateOf<LocalDate?>(null) }
+
+    // Said once, before anything else: what this is not. The same words are in About.
+    val prefs = remember { context.getSharedPreferences("first_run", android.content.Context.MODE_PRIVATE) }
+    var noticeSeen by remember { mutableStateOf(prefs.getBoolean("medical_seen", false)) }
+    if (!noticeSeen) {
+        FirstRunNotice {
+            prefs.edit().putBoolean("medical_seen", true).apply()
+            noticeSeen = true
+        }
+    }
 
     openDay?.let { day ->
         BackHandler { openDay = null }
@@ -202,7 +215,8 @@ private fun App() {
                 type = "text/plain"
                 putExtra(Intent.EXTRA_TEXT, summary(today, bleedingToday, outlook).words(context.resources))
             }
-            context.startActivity(Intent.createChooser(send, null))
+            runCatching { context.startActivity(Intent.createChooser(send, null)) }
+                .onFailure { notice = context.getString(R.string.notice_send_failed) }
         },
         onImport = { pick.launch(arrayOf("text/plain", "text/*", "*/*")) },
         offerBackup = !empty,
