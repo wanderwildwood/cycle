@@ -246,7 +246,7 @@ private fun Day(
             Box(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
-                    .padding(bottom = 6.dp)
+                    .padding(bottom = 3.dp)
                     .size(5.dp)
                     .background(Color.Black, CircleShape),
             )
