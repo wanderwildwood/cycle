@@ -108,16 +108,10 @@ fun AboutScreen(onDismiss: () -> Unit) {
         }
 
         Spacer(Modifier.height(8.dp))
-        TextMMD(
-            text = stringResource(R.string.about_close),
-            style = MaterialTheme.typography.bodyMedium,
-            textAlign = TextAlign.Center,
-            modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(min = 48.dp)
-                .border(1.dp, Color.Black)
-                .clickable(role = Role.Button, onClick = onDismiss)
-                .padding(vertical = 12.dp),
+        HouseButton(
+            label = stringResource(R.string.about_close),
+            onClick = onDismiss,
+            modifier = Modifier.fillMaxWidth(),
         )
     }
 }

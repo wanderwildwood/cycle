@@ -186,7 +186,6 @@
     <string name="notice_import_failed">The file could not be read, so nothing was changed.</string>
     <string name="notice_backup_failed">The backup could not be written, so no file was saved.</string>
     <!-- Spoken for the message line; pressing it clears it -->
-    <string name="notice_dismiss">Dismiss message</string>
 
     <!-- ============================================================ -->
     <!-- Day screen, spoken labels -->

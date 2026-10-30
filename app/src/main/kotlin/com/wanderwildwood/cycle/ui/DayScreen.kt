@@ -175,26 +175,20 @@ fun DayScreen(
                 // already applies. You can still write a note against it.
                 Column {
                     if (day <= today) {
-                        Choice(
+                        HouseButton(
                             label = if (isBleeding) stringResource(R.string.day_bleeding) else stringResource(R.string.day_not_bleeding),
-                            chosen = isBleeding,
+                            on = isBleeding,
                             onClick = { onSetBleeding(!isBleeding) },
                             modifier = Modifier.fillMaxWidth(),
                         )
 
                         if (isBleeding) {
                             Spacer(Modifier.height(8.dp))
-                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                INTENSITIES.forEachIndexed { index, name ->
-                                    Choice(
-                                        label = stringResource(name),
-                                        chosen = intensity == index + 1,
-                                        onClick = { onSetIntensity(index + 1) },
-                                        modifier = Modifier.weight(1f),
-                                        radio = true,
-                                    )
-                                }
-                            }
+                            HouseChoiceRow(
+                                options = INTENSITIES.map { stringResource(it) },
+                                selected = intensity - 1,
+                                onSelect = { onSetIntensity(it + 1) },
+                            )
                         }
 
                         Spacer(Modifier.height(18.dp))
@@ -239,18 +233,16 @@ fun DayScreen(
                             verticalArrangement = Arrangement.spacedBy(8.dp),
                             modifier = Modifier.fillMaxWidth(),
                         ) {
-                            Choice(
+                            HouseButton(
                                 label = stringResource(R.string.day_mucus_none),
-                                chosen = mucus.isEmpty(),
+                                on = mucus.isEmpty(),
                                 onClick = { mucus = "" },
-                                radio = true,
                             )
                             MUCUS_VALUES.forEachIndexed { i, value ->
-                                Choice(
+                                HouseButton(
                                     label = stringResource(MUCUS_WORDS[i]),
-                                    chosen = mucus == value,
+                                    on = mucus == value,
                                     onClick = { mucus = value },
-                                    radio = true,
                                 )
                             }
                         }
@@ -260,31 +252,23 @@ fun DayScreen(
                 item {
                     Column {
                         Heading(stringResource(R.string.day_heading_ovtest))
-                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            // Tapping the chosen one again takes the test off the day.
-                            Choice(
-                                label = stringResource(R.string.day_test_positive),
-                                chosen = ovTest == TEST_POSITIVE,
-                                onClick = { ovTest = if (ovTest == TEST_POSITIVE) "" else TEST_POSITIVE },
-                                modifier = Modifier.weight(1f),
-                                radio = true,
-                            )
-                            Choice(
-                                label = stringResource(R.string.day_test_negative),
-                                chosen = ovTest == TEST_NEGATIVE,
-                                onClick = { ovTest = if (ovTest == TEST_NEGATIVE) "" else TEST_NEGATIVE },
-                                modifier = Modifier.weight(1f),
-                                radio = true,
-                            )
-                        }
+                        // Tapping the chosen one again takes the test off the day.
+                        HouseChoiceRow(
+                            options = listOf(stringResource(R.string.day_test_positive), stringResource(R.string.day_test_negative)),
+                            selected = when (ovTest) { TEST_POSITIVE -> 0; TEST_NEGATIVE -> 1; else -> -1 },
+                            onSelect = { i ->
+                                val value = if (i == 0) TEST_POSITIVE else TEST_NEGATIVE
+                                ovTest = if (ovTest == value) "" else value
+                            },
+                        )
                     }
                 }
                 item { Spacer(Modifier.height(18.dp)) }
             }
             item {
-                Choice(
+                HouseButton(
                     label = stringResource(R.string.day_intimacy),
-                    chosen = intimacy,
+                    on = intimacy,
                     onClick = { intimacy = !intimacy },
                     modifier = Modifier.fillMaxWidth(),
                 )
@@ -314,16 +298,10 @@ fun DayScreen(
         // is gone, and so is the MMD rail that replaced it: the list pages on a swipe
         // with no scrollbar, as Messaging does.
 
-        TextMMD(
-            text = stringResource(R.string.day_done),
-            style = MaterialTheme.typography.bodyMedium,
-            textAlign = TextAlign.Center,
-            modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(min = 48.dp)
-                .border(width = 1.dp, color = Color.Black)
-                .clickable(role = Role.Button, onClick = onBack)
-                .padding(vertical = 12.dp),
+        HouseButton(
+            label = stringResource(R.string.day_done),
+            onClick = onBack,
+            modifier = Modifier.fillMaxWidth(),
         )
     }
 }
@@ -366,13 +344,13 @@ private fun Tags(
     ) {
         vocabulary.forEach { tag ->
             val label = TAG_WORDS[tag]?.let { stringResource(it) } ?: tag
-            Choice(label = label, chosen = tag in chosen, onClick = { onToggle(tag) })
+            HouseButton(label = label, on = tag in chosen, maxLines = 2, onClick = { onToggle(tag) })
         }
         ownWords.forEach { tag ->
-            Choice(label = tag, chosen = true, onClick = { onToggle(tag) })
+            HouseButton(label = tag, on = true, maxLines = 2, onClick = { onToggle(tag) })
         }
         if (!adding) {
-            Choice(label = stringResource(R.string.day_tag_other), chosen = false, onClick = { adding = true })
+            HouseButton(label = stringResource(R.string.day_tag_other), onClick = { adding = true })
         }
     }
 
@@ -405,57 +383,7 @@ private fun Tags(
                     .border(1.dp, Color.Black)
                     .padding(horizontal = 10.dp, vertical = 10.dp),
             )
-            Choice(label = stringResource(R.string.day_tag_add), chosen = false, onClick = { commit() })
+            HouseButton(label = stringResource(R.string.day_tag_add), onClick = { commit() })
         }
-    }
-}
-
-/**
- * A word you have either picked or not.
- *
- * Picked is filled and unpicked is outlined, the same as the calendar: what is true is solid, what
- * is not is a line. The mark is a filled disc as well as the inversion, because on this panel a
- * black box with white text and a white box with black text can be told apart at a glance, but a
- * row of them at arm's length reads as texture — the disc is the part that survives that.
- */
-@Composable
-private fun Choice(
-    label: String,
-    chosen: Boolean,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    radio: Boolean = false,
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center,
-        modifier = modifier
-            .heightIn(min = 48.dp)
-            .border(1.dp, Color.Black)
-            .then(if (chosen) Modifier.background(Color.Black) else Modifier)
-            // Said to a screen reader as what it is: a choice of one (selectable), or a box that is
-            // on or off (toggleable), not a bare press.
-            .then(
-                if (radio) Modifier.selectable(selected = chosen, role = Role.RadioButton, onClick = onClick)
-                else Modifier.toggleable(value = chosen, role = Role.Checkbox, onValueChange = { onClick() })
-            )
-            // 8dp, not 12: three of these share a row at 480px, and at 12 "Medium" broke
-            // across two lines as "Mediu/m".
-            .padding(horizontal = 8.dp),
-    ) {
-        Box(
-            modifier = Modifier
-                .size(9.dp)
-                .then(
-                    if (chosen) Modifier.background(Color.White, CircleShape)
-                    else Modifier.border(1.dp, Color.Black, CircleShape)
-                ),
-        )
-        Spacer(Modifier.size(6.dp))
-        TextMMD(
-            text = label,
-            style = MaterialTheme.typography.bodySmall,
-            color = if (chosen) Color.White else Color.Black,
-        )
     }
 }

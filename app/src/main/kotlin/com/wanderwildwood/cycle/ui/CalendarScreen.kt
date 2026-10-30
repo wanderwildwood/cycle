@@ -160,16 +160,10 @@ fun CalendarScreen(
 
         Spacer(Modifier.height(12.dp))
 
-        TextMMD(
-            text = stringResource(R.string.calendar_done),
-            style = MaterialTheme.typography.bodyMedium,
-            textAlign = TextAlign.Center,
-            modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(min = 48.dp)
-                .border(width = 1.dp, color = Color.Black)
-                .clickable(role = Role.Button, onClick = onBack)
-                .padding(vertical = 12.dp),
+        HouseButton(
+            label = stringResource(R.string.calendar_done),
+            onClick = onBack,
+            modifier = Modifier.fillMaxWidth(),
         )
     }
 }

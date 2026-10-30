@@ -157,21 +157,13 @@ fun TodayScreen(
 
         if (notice != null) {
             Spacer(Modifier.height(16.dp))
-            TextMMD(
-                text = notice,
-                style = MaterialTheme.typography.bodySmall,
-                textAlign = TextAlign.Center,
+            HouseButton(
+                label = notice,
+                onClick = onDismissNotice,
+                maxLines = 4,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .heightIn(min = 48.dp)
-                    .border(width = 1.dp, color = Color.Black)
-                    .clickable(
-                        role = Role.Button,
-                        onClickLabel = stringResource(R.string.notice_dismiss),
-                        onClick = onDismissNotice,
-                    )
-                    .semantics { liveRegion = LiveRegionMode.Polite }
-                    .padding(12.dp),
+                    .semantics { liveRegion = LiveRegionMode.Polite },
             )
         }
 
@@ -280,15 +272,5 @@ private fun headline(
  */
 @Composable
 private fun Action(label: String, onClick: () -> Unit) {
-    TextMMD(
-        text = label,
-        style = MaterialTheme.typography.bodyMedium,
-        textAlign = TextAlign.Center,
-        modifier = Modifier
-            .fillMaxWidth()
-            .border(width = 1.dp, color = Color.Black)
-            .heightIn(min = 48.dp)
-            .clickable(role = Role.Button, onClick = onClick)
-            .padding(vertical = 14.dp),
-    )
+    HouseButton(label = label, onClick = onClick, modifier = Modifier.fillMaxWidth())
 }
