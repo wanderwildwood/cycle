@@ -54,10 +54,8 @@ import com.wanderwildwood.cycle.R
 fun AboutScreen(onDismiss: () -> Unit) {
     val context = LocalContext.current
     BackHandler(onBack = onDismiss)
-    val licence = remember { licenceParagraphs(context.resources) }
-    val apache = remember { licenceParagraphs(context.resources, R.raw.apache_2_0) }
-    val ofl = remember { licenceParagraphs(context.resources, R.raw.ofl_1_1) }
 
+    androidx.compose.runtime.CompositionLocalProvider(LocalListBleed provides 16.dp) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -84,12 +82,7 @@ fun AboutScreen(onDismiss: () -> Unit) {
                     Body(stringResource(R.string.about_open_source_body))
                 }
             }
-            listOf(
-                R.string.about_oss_mmd,
-                R.string.about_oss_androidx,
-                R.string.about_oss_kotlin,
-                R.string.about_oss_lato,
-            ).forEach { item { Body("\u2022 " + stringResource(it)) } }
+            item { LicencesLink() }
             item {
                 Link(stringResource(R.string.about_source_line), stringResource(R.string.about_open_source), SOURCE)
             }
@@ -104,15 +97,6 @@ fun AboutScreen(onDismiss: () -> Unit) {
                     llama = true,
                 )
             }
-            item { Spacer(Modifier.height(18.dp)) }
-            item { Heading(stringResource(R.string.about_licence_heading)) }
-            items(licence) { Body(it) }
-            item { Spacer(Modifier.height(18.dp)) }
-            item { Heading(stringResource(R.string.about_apache_heading)) }
-            items(apache) { Body(it) }
-            item { Spacer(Modifier.height(18.dp)) }
-            item { Heading(stringResource(R.string.about_ofl_heading)) }
-            items(ofl) { Body(it) }
         }
 
         Spacer(Modifier.height(8.dp))
@@ -121,6 +105,7 @@ fun AboutScreen(onDismiss: () -> Unit) {
             onClick = onDismiss,
             modifier = Modifier.fillMaxWidth(),
         )
+    }
     }
 }
 

@@ -204,6 +204,16 @@
     <string name="about_feed_llamas">feed the llamas</string>
     <string name="about_no_browser">There is no browser on this phone to open that with.</string>
     <string name="about_open_website">Open wanderthe.dev</string>
+    <string name="licences_title">Licences</string>
+    <string name="licences_back">Back</string>
+    <string name="licences_source_head">Source code</string>
+    <string name="licences_licence_head">Licence</string>
+    <string name="licences_licence">Cycle is free software under the GNU General Public License, version 3 only. Copyright wander wildwood. What it is built on keeps its own licence, listed below.</string>
+    <string name="licences_built_head">Built with</string>
+    <string name="licences_full_head">Full texts</string>
+    <string name="licences_full_gpl">GNU General Public License v3 (full text)</string>
+    <string name="licences_full_apache">Apache License 2.0 (full text)</string>
+    <string name="licences_full_ofl">SIL Open Font Licence 1.1 (full text)</string>
     <string name="about_open_source">Open the source code</string>
     <string name="about_open_donate">Open the donation page</string>
 
@@ -214,7 +224,7 @@
     <string name="about_medical_heading">Not medical advice</string>
     <string name="about_medical_body">This app is a record-keeping aid, not medical advice. It does not diagnose, treat or replace a doctor or pharmacist. Its dates are estimates worked out from what you recorded. It is not contraception, and it is not a fertility or pregnancy test: do not rely on it to prevent or to plan a pregnancy. Talk to a doctor about anything that worries you.</string>
     <string name="about_open_source_heading">Open source</string>
-    <string name="about_open_source_body">Cycle is free software, licensed GPL-3.0-only. It was written from scratch and uses these open-source parts:</string>
+    <string name="about_open_source_body">Cycle is free software, licensed GPL-3.0-only, and was written from scratch. What it is built on, and every licence in full, is under Licences.</string>
     <string name="about_oss_mmd">Mudita Mindful Design (MMD), the interface library (Apache License 2.0)</string>
     <string name="about_oss_androidx">AndroidX, Jetpack Compose and Room (Apache License 2.0)</string>
     <string name="about_oss_kotlin">Kotlin and kotlinx.coroutines (Apache License 2.0)</string>
