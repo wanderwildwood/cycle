@@ -27,8 +27,15 @@ fun tagString(chosen: Collection<String>, vocabulary: List<String> = emptyList()
     return (known + unknown).joinToString("\n")
 }
 
-/** As long a tag as a chip can carry on the panel without wrapping the row into nonsense. */
-const val MAX_TAG = 24
+/** As long a tag as a chip can carry on two lines. */
+const val MAX_TAG = 40
+
+/** The longest note a day keeps. */
+const val MAX_NOTE = 5000
+
+/** [raw] cut to [max] characters; */
+fun capped(raw: String, max: Int): String = raw.take(max)
+
 
 /**
  * A word you typed, reduced to something both storage formats can carry.

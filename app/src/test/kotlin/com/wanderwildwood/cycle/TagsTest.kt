@@ -1,5 +1,8 @@
 package com.wanderwildwood.cycle
 
+import com.wanderwildwood.cycle.data.MAX_NOTE
+import com.wanderwildwood.cycle.data.MAX_TAG
+import com.wanderwildwood.cycle.data.capped
 import com.wanderwildwood.cycle.data.cleanTag
 import com.wanderwildwood.cycle.data.tagString
 import com.wanderwildwood.cycle.data.tagsOf
@@ -52,11 +55,17 @@ class TagsTest {
     }
 
     @Test fun `a very long tag is cut to something a chip can hold`() {
-        assertEquals(24, cleanTag("x".repeat(80)).length)
+        assertEquals(MAX_TAG, cleanTag("x".repeat(80)).length)
     }
 
     @Test fun `a typed tag survives being stored and read back`() {
         val stored = tagString(setOf("Cramps", "Sore hips"), vocabulary)
         assertEquals(listOf("Cramps", "Sore hips"), tagsOf(stored))
+    }
+
+    @Test
+    fun cappedCutsAtTheLimit() {
+        assertEquals(MAX_NOTE, capped("x".repeat(MAX_NOTE + 10), MAX_NOTE).length)
+        assertEquals("abc", capped("abc", MAX_NOTE))
     }
 }

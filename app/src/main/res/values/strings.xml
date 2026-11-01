@@ -167,6 +167,10 @@
     <string name="day_tag_other">Other…</string>
     <!-- Beside the box where you type your own word (verb) -->
     <string name="day_tag_add">Add</string>
+    <!-- Shown under a note box that has reached its limit -->
+    <string name="day_note_full">That is as long as a note can be.</string>
+    <!-- Shown under the box for a word of your own that has reached its limit -->
+    <string name="day_tag_full">That is as long as a word can be.</string>
 
     <!-- ============================================================ -->
     <!-- Messages after Import history and Back up -->

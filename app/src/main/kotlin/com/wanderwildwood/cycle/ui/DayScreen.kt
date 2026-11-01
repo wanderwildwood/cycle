@@ -46,6 +46,9 @@ import com.wanderwildwood.cycle.data.DayNote
 import com.wanderwildwood.cycle.data.MUCUS_VALUES
 import com.wanderwildwood.cycle.data.TEST_NEGATIVE
 import com.wanderwildwood.cycle.data.TEST_POSITIVE
+import com.wanderwildwood.cycle.data.MAX_NOTE
+import com.wanderwildwood.cycle.data.MAX_TAG
+import com.wanderwildwood.cycle.data.capped
 import com.wanderwildwood.cycle.data.cleanTag
 import com.wanderwildwood.cycle.data.tagString
 import com.wanderwildwood.cycle.data.tagsOf
@@ -130,6 +133,7 @@ fun DayScreen(
     }
     var intimacy by remember(day, stored) { mutableStateOf(stored?.intimacy ?: false) }
     var note by remember(day, stored) { mutableStateOf(stored?.note.orEmpty()) }
+    var noteFull by remember(day, stored) { mutableStateOf(false) }
     var mucus by remember(day, stored) { mutableStateOf(stored?.mucus.orEmpty()) }
     var ovTest by remember(day, stored) { mutableStateOf(stored?.ovulationTest.orEmpty()) }
 
@@ -281,7 +285,10 @@ fun DayScreen(
                     Heading(stringResource(R.string.day_heading_note))
                     BasicTextField(
                         value = note,
-                        onValueChange = { note = it },
+                        onValueChange = {
+                            noteFull = it.length >= MAX_NOTE
+                            note = capped(it, MAX_NOTE)
+                        },
                         textStyle = MaterialTheme.typography.bodySmall.copy(color = Color.Black),
                         cursorBrush = SolidColor(Color.Black),
                         modifier = Modifier
@@ -290,6 +297,10 @@ fun DayScreen(
                             .border(1.dp, Color.Black)
                             .padding(10.dp),
                     )
+                    if (noteFull) {
+                        Spacer(Modifier.height(6.dp))
+                        TextMMD(text = stringResource(R.string.day_note_full), style = MaterialTheme.typography.bodySmall)
+                    }
                 }
             }
         }
@@ -334,6 +345,7 @@ private fun Tags(
 ) {
     var adding by remember { mutableStateOf(false) }
     var typed by remember { mutableStateOf("") }
+    var typedFull by remember { mutableStateOf(false) }
 
     val ownWords = (chosen - vocabulary.toSet()).sorted()
 
@@ -370,7 +382,10 @@ private fun Tags(
         ) {
             BasicTextField(
                 value = typed,
-                onValueChange = { typed = it },
+                onValueChange = {
+                    typedFull = it.length >= MAX_TAG
+                    typed = capped(it, MAX_TAG)
+                },
                 singleLine = true,
                 textStyle = MaterialTheme.typography.bodySmall.copy(color = Color.Black),
                 cursorBrush = SolidColor(Color.Black),
@@ -384,6 +399,10 @@ private fun Tags(
                     .padding(horizontal = 10.dp, vertical = 10.dp),
             )
             HouseButton(label = stringResource(R.string.day_tag_add), onClick = { commit() })
+        }
+        if (typedFull) {
+            Spacer(Modifier.height(6.dp))
+            TextMMD(text = stringResource(R.string.day_tag_full), style = MaterialTheme.typography.bodySmall)
         }
     }
 }
