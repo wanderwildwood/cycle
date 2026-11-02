@@ -67,10 +67,7 @@ fun TodayScreen(
     onDismissNotice: () -> Unit = {},
 ) {
     var aboutOpen by remember { mutableStateOf(false) }
-    if (aboutOpen) {
-        AboutScreen(onDismiss = { aboutOpen = false })
-        return
-    }
+    if (aboutOpen) AboutDialog(onDismiss = { aboutOpen = false })
 
     // A message about what an import or a backup did stays up for six seconds, or until pressed.
     if (notice != null) {

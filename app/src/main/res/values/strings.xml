@@ -205,9 +205,8 @@
     <string name="about_label">About this app</string>
     <string name="about_close">Close</string>
     <!-- Opens the donation page -->
-    <string name="about_feed_llamas">feed the llamas</string>
+    <string name="about_feed_llamas">Feed the llamas</string>
     <string name="about_no_browser">There is no browser on this phone to open that with.</string>
-    <string name="about_open_website">Open wanderthe.dev</string>
     <string name="licences_title">Licences</string>
     <string name="licences_back">Back</string>
     <string name="licences_source_head">Source code</string>
@@ -217,8 +216,6 @@
     <string name="licences_full_gpl">GNU General Public License v3 (full text)</string>
     <string name="licences_full_apache">Apache License 2.0 (full text)</string>
     <string name="licences_full_ofl">SIL Open Font Licence 1.1 (full text)</string>
-    <string name="about_open_source">Open the source code</string>
-    <string name="about_open_donate">Open the donation page</string>
 
     <string name="about_privacy_heading">Privacy</string>
     <string name="about_privacy_body">Everything you put in this app stays on this phone. It has no permissions and no internet access, so nothing is sent anywhere, and nothing is collected about you. There are no ads, no analytics and no tracking. A backup is written only where you choose to save it, and Send to… hands one line, when your next period is expected, to the app you pick, which does the sending.</string>
@@ -228,15 +225,7 @@
     <string name="about_medical_body">This app is a record-keeping aid, not medical advice. It does not diagnose, treat or replace a doctor or pharmacist. Its dates are estimates worked out from what you recorded. It is not contraception, and it is not a fertility or pregnancy test: do not rely on it to prevent or to plan a pregnancy. Talk to a doctor about anything that worries you.</string>
     <string name="about_open_source_heading">Open source</string>
     <string name="about_open_source_body">Cycle is free software, licensed GPL-3.0-only, and was written from scratch. What it is built on, and every licence in full, is under Licences.</string>
-    <string name="about_oss_mmd">Mudita Mindful Design (MMD), the interface library (Apache License 2.0)</string>
-    <string name="about_oss_androidx">AndroidX, Jetpack Compose and Room (Apache License 2.0)</string>
-    <string name="about_oss_kotlin">Kotlin and kotlinx.coroutines (Apache License 2.0)</string>
-    <string name="about_oss_lato">Lato typeface, tyPoland (SIL Open Font License 1.1)</string>
-    <string name="about_source_line">Source code: github.com/wanderwildwood/cycle</string>
-    <string name="about_apache_heading">Apache License, version 2.0</string>
-    <string name="about_ofl_heading">SIL Open Font License, version 1.1</string>
     <string name="about_no_browser_address">No browser is installed. The address is %1$s.</string>
     <string name="notice_send_failed">Nothing on this phone can send that.</string>
     <string name="first_run_ok">I understand</string>
-    <string name="about_licence_heading">GNU General Public License v3</string>
 </resources>
