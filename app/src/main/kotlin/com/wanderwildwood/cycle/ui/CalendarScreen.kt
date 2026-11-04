@@ -17,6 +17,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import com.mudita.mmd.components.text.TextMMD
@@ -273,7 +274,7 @@ private fun Key() {
         KeyRow(filled = true) { TextMMD(stringResource(R.string.calendar_key_recorded), style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Normal) }
         KeyRow(filled = false) { TextMMD(stringResource(R.string.calendar_key_expected), style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Normal) }
         Row(verticalAlignment = Alignment.CenterVertically) {
-            TextMMD("12", style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Normal, textDecoration = TextDecoration.Underline, textAlign = TextAlign.Center, modifier = Modifier.size(18.dp))
+            TextMMD("12", style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Normal, textDecoration = TextDecoration.Underline, textAlign = TextAlign.Center, modifier = Modifier.width(22.dp))
             Spacer(Modifier.size(6.dp))
             TextMMD(stringResource(R.string.calendar_key_data), style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Normal)
         }

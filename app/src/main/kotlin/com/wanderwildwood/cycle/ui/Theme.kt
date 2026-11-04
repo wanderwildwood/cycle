@@ -21,4 +21,4 @@ import com.mudita.mmd.ThemeMMD
  * point.
  */
 @Composable
-fun CycleTheme(content: @Composable () -> Unit) = ThemeMMD(colorScheme = monochrome, content = content)
+fun CycleTheme(content: @Composable () -> Unit) = ThemeMMD(colorScheme = monochrome, typography = houseTypography, content = content)
