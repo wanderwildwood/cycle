@@ -8,7 +8,7 @@ so what is recorded here has no mechanism by which to leave the phone.
 | | |
 |---|---|
 | ![Today](screenshots/1-today.png) | ![The calendar: period days, the expected days, the fertile window and ovulation](screenshots/2-calendar.png) |
-| ![One day: symptoms, mucus and an ovulation test](screenshots/3-day.png) | ![About: not medical advice, and what it is built from](screenshots/4-about.png) |
+| ![One day: bleeding, mood and symptoms](screenshots/3-day.png) | ![About: not medical advice, and what it is built from](screenshots/4-about.png) |
 
 ## Where it came from
 
