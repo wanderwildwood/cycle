@@ -7,14 +7,6 @@ import com.wanderwildwood.cycle.R
 /** The address of the app's own source code. */
 const val SOURCE_URL = "https://github.com/wanderwildwood/cycle"
 
-/** What the APK carries that is not this app's own code, and the licence each project declares. */
-val LICENCE_COMPONENTS: List<LicenceComponent> = listOf(
-    LicenceComponent("Mudita Mindful Design (MMD), the interface library", "Mudita", "Apache-2.0", "https://github.com/mudita/MMD"),
-    LicenceComponent("AndroidX, Jetpack Compose and Room", "Google", "Apache-2.0", "https://developer.android.com/jetpack"),
-    LicenceComponent("Kotlin and kotlinx.coroutines", "JetBrains", "Apache-2.0", "https://kotlinlang.org"),
-    LicenceComponent("Lato typeface, inside MMD", "tyPoland Lukasz Dziedzic", "OFL-1.1", "https://www.latofonts.com"),
-)
-
 /** Each distinct licence text once: family id and the raw resource. */
 val LICENCE_RAW: List<Pair<String, Int>> = listOf(
     "gpl" to R.raw.gpl_3_0,
@@ -27,7 +19,8 @@ fun rememberLicencesData(): LicencesData = LicencesData(
     appName = "Period Tracker",
     sourceUrl = SOURCE_URL,
     licenceLine = stringResource(R.string.licences_licence),
-    components = LICENCE_COMPONENTS,
+    // One row per artifact in the APK, listed by the build (config/libraries adds what Gradle cannot see).
+    components = rememberGeneratedComponents(R.raw.aboutlibraries),
     texts = LICENCE_RAW.map { (id, raw) ->
         LicenceText(id, stringResource(when (id) {
             "gpl" -> R.string.licences_full_gpl
