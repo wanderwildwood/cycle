@@ -8,7 +8,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalCursorBlinkEnabled
@@ -91,7 +90,7 @@ private fun App() {
     // Reading a document you pick needs no permission of any kind: the picker hands back a URI
     // that is already granted. This is the whole reason the import works without a manifest line.
     val pick = rememberLauncherForActivityResult(
-        ActivityResultContracts.OpenDocument()
+        FilesOpenDocument(writable = false)
     ) { uri: Uri? ->
         if (uri != null) scope.launch {
             val res = context.resources
@@ -124,7 +123,7 @@ private fun App() {
     // not. This runs on [writes] rather than the screen's scope: a backup cancelled halfway leaves
     // a truncated file that still looks like a backup, which is worse than not having written one.
     val save = rememberLauncherForActivityResult(
-        ActivityResultContracts.CreateDocument("text/plain")
+        FilesCreateDocument("text/plain")
     ) { uri: Uri? ->
         if (uri != null) writes.launch {
             val res = context.resources
