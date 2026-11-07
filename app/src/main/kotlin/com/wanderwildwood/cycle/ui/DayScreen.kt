@@ -173,6 +173,7 @@ fun DayScreen(
         PagedColumn(
             modifier = Modifier
                 .weight(1f),
+            showCutRow = true,
         ) {
             item {
                 // A day that has not happened yet is not yours to record, the same rule the calendar
