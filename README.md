@@ -12,7 +12,7 @@ so what is recorded here has no mechanism by which to leave the phone.
 
 ## Where it came from
 
-Not a fork. The behaviour follows Period Tracker (GP International LLC), which is proprietary and
+Not a fork. The behavior follows Period Tracker (GP International LLC), which is proprietary and
 has no source to derive from; it was matched by using the running app, not by reading it.
 
 ## Building
@@ -49,7 +49,7 @@ and it is the reason a single forgotten tap costs nothing.
 
 Privacy: what the app stores and what it sends is set out in [PRIVACY.md](PRIVACY.md).
 
-## Licence
+## License
 
 GPL-3.0-only. See [LICENSE](LICENSE).
 
@@ -62,13 +62,13 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
 even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 General Public License for more details.
 
-Version 3 only, not "or later": nothing here can be moved onto a licence that has not been written
+Version 3 only, not "or later": nothing here can be moved onto a license that has not been written
 yet.
 
 Nothing forced that choice. This is not a fork, and every dependency is permissive — AndroidX,
 Compose and Room are all Apache-2.0. It is copyleft because of what the app holds. The whole design
-is that the record has no way off this phone that you do not take yourself; a permissive licence
+is that the record has no way off this phone that you do not take yourself; a permissive license
 would let someone ship this same code with telemetry added and never publish a line of it. Copyleft
 is the part of that design that survives the code leaving here.
 
-Lato keeps its own licence — SIL Open Font License 1.1, `LICENSES/OFL-1.1.txt`.
+Lato keeps its own license — SIL Open Font License 1.1, `LICENSES/OFL-1.1.txt`.

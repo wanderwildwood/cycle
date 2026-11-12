@@ -71,7 +71,7 @@ The app is suitable for all ages and does not knowingly collect anything from an
 
 ## Terms
 
-This app is free software under the GNU General Public License v3. It comes with no warranty: use it at your own risk. The same text is in the app, under the small i on the Today screen, with the licence and a link to the source.
+This app is free software under the GNU General Public License v3. It comes with no warranty: use it at your own risk. The same text is in the app, under the small i on the Today screen, with the license and a link to the source.
 
 ## Not medical advice
 
