@@ -7,5 +7,8 @@
     </style>
 
     <!-- values-v31 adds the blank splash to this; below 31 there is no splash to blank. -->
-    <style name="Theme.Cycle" parent="Base.Theme.Cycle" />
+    <style name="Theme.Cycle" parent="Base.Theme.Cycle">
+        <!-- No start-up window: in dark mode it would flash white before the first frame. -->
+        <item name="android:windowDisablePreview">true</item>
+    </style>
 </resources>
