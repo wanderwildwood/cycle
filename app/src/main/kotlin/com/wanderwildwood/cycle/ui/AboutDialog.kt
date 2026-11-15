@@ -17,13 +17,22 @@ fun AboutDialog(onDismiss: () -> Unit) {
         title = stringResource(R.string.about_version, BuildConfig.VERSION_NAME),
         sections = listOf(
             AboutSection(null, stringResource(R.string.about_what)),
+            // Long drawers are told in several short paragraphs (unheaded sections join the drawer
+            // above): the About pages turn on whole paragraphs, and one paragraph taller than a page
+            // started on the page after its heading, so Privacy opened onto a blank drawer.
             AboutSection(stringResource(R.string.about_privacy_heading), stringResource(R.string.about_privacy_body)),
+            AboutSection(null, stringResource(R.string.about_privacy_body_2)),
+            AboutSection(null, stringResource(R.string.about_privacy_body_3)),
+            AboutSection(null, stringResource(R.string.about_privacy_body_4)),
             AboutSection(stringResource(R.string.privacy_who_title), stringResource(R.string.privacy_who)),
             AboutSection(stringResource(R.string.privacy_contact_title), stringResource(R.string.privacy_contact)),
             AboutSection(stringResource(R.string.privacy_rights_title), stringResource(R.string.privacy_rights)),
+            AboutSection(null, stringResource(R.string.privacy_rights_2)),
             AboutSection(stringResource(R.string.about_method_heading), stringResource(R.string.about_method_body)),
+            AboutSection(null, stringResource(R.string.about_method_body_2)),
             AboutSection(stringResource(R.string.about_medical_heading), stringResource(R.string.about_medical_body)),
             AboutSection(stringResource(R.string.about_terms_heading), stringResource(R.string.about_terms_body)),
+            AboutSection(null, stringResource(R.string.about_terms_body_2)),
             AboutSection(stringResource(R.string.about_open_source_heading), stringResource(R.string.about_open_source_body)),
         ),
         sourceUrl = SOURCE_URL,
