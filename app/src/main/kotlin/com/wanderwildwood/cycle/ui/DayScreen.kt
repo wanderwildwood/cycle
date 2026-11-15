@@ -13,6 +13,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.ui.semantics.Role
@@ -20,6 +23,7 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
@@ -28,15 +32,24 @@ import androidx.compose.material3.MaterialTheme
 import com.mudita.mmd.components.text.TextMMD
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
@@ -151,10 +164,30 @@ fun DayScreen(
     val save by rememberUpdatedState(onSave)
     DisposableEffect(day) { onDispose { save(latest.value) } }
 
+    // The keyboard takes room from the list and gives it back. Each time the room changes, or the
+    // cursor goes into another field, the field being typed in is brought whole onto the page;
+    // when the room comes back the page starts on a whole row again first.
+    val list = rememberLazyListState()
+    var listHeight by remember { mutableIntStateOf(0) }
+    val typingIn = remember { mutableStateOf<BringIntoViewRequester?>(null) }
+    LaunchedEffect(list) {
+        var last = 0
+        snapshotFlow { listHeight to typingIn.value }.collect { (height, field) ->
+            if (last in 1 until height) list.scrollToItem(list.firstVisibleItemIndex)
+            last = height
+            withFrameNanos { }
+            field?.bringIntoView()
+        }
+    }
+
+    // The window is resized for the keyboard (adjustResize in the manifest) rather than slid up
+    // under the status bar, so the date stays at the top and Done stays above the keys; the list
+    // between them gives up the room. imePadding covers a window that is not resized for it.
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
+            .imePadding()
             .padding(horizontal = 16.dp, vertical = 16.dp),
     ) {
         TextMMD(
@@ -172,7 +205,9 @@ fun DayScreen(
         // the app that did not behave like the phone it is on.
         PagedColumn(
             modifier = Modifier
-                .weight(1f),
+                .weight(1f)
+                .onSizeChanged { listHeight = it.height },
+            state = list,
             showCutRow = true,
         ) {
             item {
@@ -209,6 +244,7 @@ fun DayScreen(
                         chosen = moods,
                         onToggle = { tag -> moods = if (tag in moods) moods - tag else moods + tag },
                         onAdd = { tag -> moods = moods + tag },
+                        typingIn = typingIn,
                     )
                 }
             }
@@ -223,6 +259,7 @@ fun DayScreen(
                         chosen = symptoms,
                         onToggle = { tag -> symptoms = if (tag in symptoms) symptoms - tag else symptoms + tag },
                         onAdd = { tag -> symptoms = symptoms + tag },
+                        typingIn = typingIn,
                     )
                 }
             }
@@ -295,6 +332,7 @@ fun DayScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .heightIn(min = 96.dp)
+                            .keptWhole(typingIn)
                             .border(1.dp, Color.Black)
                             .padding(10.dp),
                     )
@@ -343,6 +381,7 @@ private fun Tags(
     chosen: Set<String>,
     onToggle: (String) -> Unit,
     onAdd: (String) -> Unit,
+    typingIn: MutableState<BringIntoViewRequester?>,
 ) {
     var adding by remember { mutableStateOf(false) }
     var typed by remember { mutableStateOf("") }
@@ -375,6 +414,16 @@ private fun Tags(
             adding = false
         }
 
+        // The field is where the next press goes, so it opens with the cursor in it and the
+        // keyboard up, and the day screen moves the list until the field, and Add beside it, are
+        // on the page: "Other…" at the foot of a page used to vanish and leave the field below
+        // the fold, with no cursor in it.
+        val field = remember { FocusRequester() }
+        LaunchedEffect(Unit) {
+            withFrameNanos { }
+            field.requestFocus()
+        }
+
         Spacer(Modifier.height(8.dp))
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -396,6 +445,8 @@ private fun Tags(
                 modifier = Modifier
                     .weight(1f)
                     .heightIn(min = 48.dp)
+                    .focusRequester(field)
+                    .keptWhole(typingIn)
                     .border(1.dp, Color.Black)
                     .padding(horizontal = 10.dp, vertical = 10.dp),
             )
@@ -405,5 +456,18 @@ private fun Tags(
             Spacer(Modifier.height(6.dp))
             TextMMD(text = stringResource(R.string.day_tag_full), style = MaterialTheme.typography.bodySmall)
         }
+    }
+}
+
+/**
+ * Marks a text field, border and all, as the one to keep on the page while the cursor is in it.
+ * [typingIn] holds the field being typed in, or nothing; the day screen reads it.
+ */
+@Composable
+private fun Modifier.keptWhole(typingIn: MutableState<BringIntoViewRequester?>): Modifier {
+    val whole = remember { BringIntoViewRequester() }
+    DisposableEffect(whole) { onDispose { if (typingIn.value === whole) typingIn.value = null } }
+    return bringIntoViewRequester(whole).onFocusChanged {
+        if (it.isFocused) typingIn.value = whole else if (typingIn.value === whole) typingIn.value = null
     }
 }
