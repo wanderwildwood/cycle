@@ -27,12 +27,12 @@ fun AboutMark(onClick: () -> Unit, modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
             .size(48.dp)
-            .clickable(role = Role.Button, onClickLabel = stringResource(R.string.about_label), onClick = onClick),
+            .clickable(role = Role.Button, onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {
         Icon(
             imageVector = Icons.Info,
-            contentDescription = null,
+            contentDescription = stringResource(R.string.about_label),
             tint = Color.Black,
             modifier = Modifier.size(22.dp),
         )

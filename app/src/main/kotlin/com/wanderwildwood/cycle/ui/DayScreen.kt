@@ -20,6 +20,10 @@ import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.toggleableState
+import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -219,7 +223,7 @@ fun DayScreen(
                             label = if (isBleeding) stringResource(R.string.day_bleeding) else stringResource(R.string.day_not_bleeding),
                             on = isBleeding,
                             onClick = { onSetBleeding(!isBleeding) },
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = Modifier.fillMaxWidth().ticked(isBleeding),
                         )
 
                         if (isBleeding) {
@@ -279,12 +283,14 @@ fun DayScreen(
                                 label = stringResource(R.string.day_mucus_none),
                                 on = mucus.isEmpty(),
                                 onClick = { mucus = "" },
+                                modifier = Modifier.semantics { selected = mucus.isEmpty() },
                             )
                             MUCUS_VALUES.forEachIndexed { i, value ->
                                 HouseButton(
                                     label = stringResource(MUCUS_WORDS[i]),
                                     on = mucus == value,
                                     onClick = { mucus = value },
+                                    modifier = Modifier.semantics { selected = mucus == value },
                                 )
                             }
                         }
@@ -312,7 +318,7 @@ fun DayScreen(
                     label = stringResource(R.string.day_intimacy),
                     on = intimacy,
                     onClick = { intimacy = !intimacy },
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().ticked(intimacy),
                 )
             }
             item {
@@ -356,6 +362,15 @@ fun DayScreen(
     }
 }
 
+/**
+ * Says to a screen reader what the fill says to the eye: a word that is on or off for the day is a
+ * checkbox, ticked or not. (One of several, like the mucus words, is marked selected instead.)
+ */
+private fun Modifier.ticked(on: Boolean): Modifier = semantics {
+    role = Role.Checkbox
+    toggleableState = ToggleableState(on)
+}
+
 @Composable
 private fun Heading(text: String) {
     TextMMD(
@@ -396,10 +411,10 @@ private fun Tags(
     ) {
         vocabulary.forEach { tag ->
             val label = TAG_WORDS[tag]?.let { stringResource(it) } ?: tag
-            HouseButton(label = label, on = tag in chosen, maxLines = 2, onClick = { onToggle(tag) })
+            HouseButton(label = label, on = tag in chosen, maxLines = 2, onClick = { onToggle(tag) }, modifier = Modifier.ticked(tag in chosen))
         }
         ownWords.forEach { tag ->
-            HouseButton(label = tag, on = true, maxLines = 2, onClick = { onToggle(tag) })
+            HouseButton(label = tag, on = true, maxLines = 2, onClick = { onToggle(tag) }, modifier = Modifier.ticked(true))
         }
         if (!adding) {
             HouseButton(label = stringResource(R.string.day_tag_other), onClick = { adding = true })
