@@ -150,22 +150,7 @@ fun TodayScreen(
         // Weighted rather than a fixed gap: whatever is left over collapses here, so the
         // footer sits on the bottom of the panel instead of being pushed past it. A fixed 40dp
         // put "Back up…" at y=780 on a 757px content box — drawn nowhere, still tappable.
-        //
-        // The message is drawn inside that leftover room, so it can never push the footer down,
-        // and as plain words with no frame: a frame made it look like one more button.
-        Box(modifier = Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.TopCenter) {
-            if (notice != null) {
-                TextMMD(
-                    text = notice,
-                    style = MaterialTheme.typography.bodySmall,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 12.dp)
-                        .semantics { liveRegion = LiveRegionMode.Polite },
-                )
-            }
-        }
+        Spacer(Modifier.weight(1f))
 
         // Offered while the app is empty and then never again. An import is something you do
         // once; a permanent button for it would be a permanent reminder of a finished job.
@@ -174,8 +159,23 @@ fun TodayScreen(
             Spacer(Modifier.height(24.dp))
         }
 
-        // Quiet, and only worth saying once there is something behind it.
-        if (!forecast.estimated) {
+        // A message about an import or a backup takes the quiet cycle line's place until the next
+        // press. Drawn in the leftover room above the line, a two-line message had about 40 px and
+        // its second line ran into the cycle line, half cut. Here it is laid out like the rest of
+        // the footer, so it gets the height it needs and the weighted room above gives way to it;
+        // the cycle line is back on the next press, unchanged. Plain words with no frame: a frame
+        // made it look like one more button.
+        if (notice != null) {
+            TextMMD(
+                text = notice,
+                style = MaterialTheme.typography.bodySmall,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .semantics { liveRegion = LiveRegionMode.Polite },
+            )
+        } else if (!forecast.estimated) {
+            // Quiet, and only worth saying once there is something behind it.
             TextMMD(
                 text = stringResource(
                     R.string.today_cycle_and_period,
