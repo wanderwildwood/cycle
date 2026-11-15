@@ -11,12 +11,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
-import kotlinx.coroutines.delay
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
@@ -69,13 +67,10 @@ fun TodayScreen(
     var aboutOpen by remember { mutableStateOf(false) }
     if (aboutOpen) AboutDialog(onDismiss = { aboutOpen = false })
 
-    // A message about what an import or a backup did stays up for six seconds, or until pressed.
-    if (notice != null) {
-        LaunchedEffect(notice) {
-            delay(6000)
-            onDismissNotice()
-        }
-    }
+    // A message about what an import or a backup did stays until the next thing you do here: on
+    // this panel a message on a timer could be gone before it had been read. Every press on the
+    // screen takes it down on its way to doing what it does.
+    fun then(action: () -> Unit): () -> Unit = { onDismissNotice(); action() }
 
     Column(
         modifier = Modifier
@@ -96,7 +91,7 @@ fun TodayScreen(
                 modifier = Modifier.fillMaxWidth().align(Alignment.Center),
             )
             AboutMark(
-                onClick = { aboutOpen = true },
+                onClick = then { aboutOpen = true },
                 modifier = Modifier.align(Alignment.CenterEnd).offset(x = 12.dp, y = (-10).dp),
             )
         }
@@ -138,41 +133,44 @@ fun TodayScreen(
                 awaiting -> stringResource(R.string.today_bleeding_today)
                 else -> stringResource(R.string.today_period_started)
             },
-            onClick = if (bleedingToday) onUnmarkToday else onMarkToday,
+            onClick = then(if (bleedingToday) onUnmarkToday else onMarkToday),
         )
 
         Spacer(Modifier.height(16.dp))
 
-        Action(label = stringResource(R.string.today_calendar), onClick = onOpenCalendar)
+        Action(label = stringResource(R.string.today_calendar), onClick = then(onOpenCalendar))
 
         Spacer(Modifier.height(16.dp))
 
         // Nothing worth sending until there is a date to send.
         if (forecast.nextStart != null || bleedingToday) {
-            Action(label = stringResource(R.string.today_send_to), onClick = onSend)
-        }
-
-        if (notice != null) {
-            Spacer(Modifier.height(16.dp))
-            HouseButton(
-                label = notice,
-                onClick = onDismissNotice,
-                maxLines = 4,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .semantics { liveRegion = LiveRegionMode.Polite },
-            )
+            Action(label = stringResource(R.string.today_send_to), onClick = then(onSend))
         }
 
         // Weighted rather than a fixed gap: whatever is left over collapses here, so the
         // footer sits on the bottom of the panel instead of being pushed past it. A fixed 40dp
         // put "Back up…" at y=780 on a 757px content box — drawn nowhere, still tappable.
-        Spacer(Modifier.weight(1f))
+        //
+        // The message is drawn inside that leftover room, so it can never push the footer down,
+        // and as plain words with no frame: a frame made it look like one more button.
+        Box(modifier = Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.TopCenter) {
+            if (notice != null) {
+                TextMMD(
+                    text = notice,
+                    style = MaterialTheme.typography.bodySmall,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 12.dp)
+                        .semantics { liveRegion = LiveRegionMode.Polite },
+                )
+            }
+        }
 
         // Offered while the app is empty and then never again. An import is something you do
         // once; a permanent button for it would be a permanent reminder of a finished job.
         if (offerImport) {
-            Action(label = stringResource(R.string.today_import_history), onClick = onImport)
+            Action(label = stringResource(R.string.today_import_history), onClick = then(onImport))
             Spacer(Modifier.height(24.dp))
         }
 
@@ -201,7 +199,7 @@ fun TodayScreen(
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .heightIn(min = 48.dp)
-                    .clickable(role = Role.Button, onClick = onBackUp)
+                    .clickable(role = Role.Button, onClick = then(onBackUp))
                     .padding(horizontal = 16.dp, vertical = 12.dp),
             )
         }

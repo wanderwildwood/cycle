@@ -84,7 +84,7 @@ private fun App() {
     var empty by remember { mutableStateOf(false) }
     LaunchedEffect(days.size) { empty = store.isEmpty() }
 
-    // What the last import or backup did, in words; cleared after a few seconds or on a press.
+    // What the last import or backup did, in words. It stays until the next thing you do.
     var notice by remember { mutableStateOf<String?>(null) }
 
     // Reading a document you pick needs no permission of any kind: the picker hands back a URI
