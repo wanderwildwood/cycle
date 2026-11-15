@@ -137,6 +137,14 @@ class BackupTest {
         assertFalse(looksLikeBackup(""))
     }
 
+    @Test fun `a backup made under the old name still restores`() {
+        val old = "Cycle Tracking backup\nMade 4 March 2026\n\n2026-01-05\nbleeding heavy\n"
+        assertTrue(looksLikeBackup(old))
+        assertEquals(3, parseBackup(old).days.single().intensity)
+        assertTrue(looksLikeBackup("Cycle backup\nMade 4 March 2026\n"))
+        assertFalse(looksLikeBackup("Cycle notes\n"))
+    }
+
     @Test fun `the old export format still parses as itself`() {
         val imported = parsePeriodTrackerExport("Period Start\tJul 5, 2022\nPeriod End\tJul 8, 2022")
         assertEquals(1, imported.periods.size)
@@ -146,7 +154,7 @@ class BackupTest {
         val days = listOf(BleedingDay(day(LocalDate.of(2026, 1, 5)), intensity = 3))
         val notes = listOf(DayNote(day(LocalDate.of(2026, 1, 5)), symptoms = "Cramps"))
         val text = formatBackup(days, notes, made)
-        assertTrue(text.startsWith("Cycle Tracking backup"))
+        assertTrue(text.startsWith("Cycle backup\n"))
         assertTrue(text.contains("Made 4 March 2026"))
         assertTrue(text.contains("2026-01-05"))
         assertTrue(text.contains("bleeding heavy"))

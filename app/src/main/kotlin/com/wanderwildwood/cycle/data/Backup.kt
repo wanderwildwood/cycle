@@ -25,7 +25,10 @@ data class Backup(val days: List<BleedingDay>, val notes: List<DayNote>)
 private val FILE_DATE = DateTimeFormatter.ofPattern("d MMMM yyyy", Locale.US)
 private val DAY = DateTimeFormatter.ISO_LOCAL_DATE
 
-private const val HEADING = "Cycle Tracking backup"
+private const val HEADING = "Cycle backup"
+
+/** What the first line said before the app was called Cycle everywhere; such files still restore. */
+private const val OLD_HEADING = "Cycle Tracking backup"
 
 /** What each stored intensity is called in the file, and back again. */
 private val INTENSITY_WORDS = mapOf(1 to "light", 2 to "medium", 3 to "heavy")
@@ -92,7 +95,7 @@ fun formatBackup(days: List<BleedingDay>, notes: List<DayNote>, made: LocalDate)
  * and should not have to know which of two file formats you are holding.
  */
 fun looksLikeBackup(text: String): Boolean =
-    text.lineSequence().firstOrNull()?.trim() == HEADING
+    text.lineSequence().firstOrNull()?.trim().let { it == HEADING || it == OLD_HEADING }
 
 /**
  * Read a backup back in.
