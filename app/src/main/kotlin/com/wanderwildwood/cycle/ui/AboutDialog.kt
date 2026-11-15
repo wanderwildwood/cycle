@@ -21,6 +21,7 @@ fun AboutDialog(onDismiss: () -> Unit) {
             AboutSection(stringResource(R.string.privacy_who_title), stringResource(R.string.privacy_who)),
             AboutSection(stringResource(R.string.privacy_contact_title), stringResource(R.string.privacy_contact)),
             AboutSection(stringResource(R.string.privacy_rights_title), stringResource(R.string.privacy_rights)),
+            AboutSection(stringResource(R.string.about_method_heading), stringResource(R.string.about_method_body)),
             AboutSection(stringResource(R.string.about_medical_heading), stringResource(R.string.about_medical_body)),
             AboutSection(stringResource(R.string.about_terms_heading), stringResource(R.string.about_terms_body)),
             AboutSection(stringResource(R.string.about_open_source_heading), stringResource(R.string.about_open_source_body)),
