@@ -19,6 +19,7 @@
     <string name="today_import_history">Import history</string>
     <!-- Opens the save dialog for a backup file (verb) -->
     <string name="today_back_up">Back up as plain text…</string>
+    <string name="today_back_up_note">Not encrypted: the whole history, readable by anyone or any app that can open the file.</string>
     <!-- The quiet line near the foot: %1$s and %2$s are lengths such as "29 days" or "27–31 days" -->
     <string name="today_cycle_and_period">Cycle %1$s · period %2$s</string>
     <!-- A length that did not vary; %1$d is the number of days -->

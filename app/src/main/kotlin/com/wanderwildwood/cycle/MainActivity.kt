@@ -83,6 +83,9 @@ private fun App() {
 
     var empty by remember { mutableStateOf(false) }
     LaunchedEffect(days.size) { empty = store.isEmpty() }
+    // A day with only a mood or a note is worth a backup too, before any period day exists.
+    var nothingToBackUp by remember { mutableStateOf(true) }
+    LaunchedEffect(days.size, recorded.size) { nothingToBackUp = store.dayCount() == 0 }
 
     // What the last import or backup did, in words. It stays until the next thing you do.
     var notice by remember { mutableStateOf<String?>(null) }
@@ -218,7 +221,7 @@ private fun App() {
                 .onFailure { notice = context.getString(R.string.notice_send_failed) }
         },
         onImport = { pick.launch(arrayOf("text/plain", "text/*", "*/*")) },
-        offerBackup = !empty,
+        offerBackup = !nothingToBackUp,
         onBackUp = { save.launch("cycle-backup-$today.txt") },
         notice = notice,
         onDismissNotice = { notice = null },

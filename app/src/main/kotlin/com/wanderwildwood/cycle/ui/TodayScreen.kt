@@ -202,6 +202,15 @@ fun TodayScreen(
                     .clickable(role = Role.Button, onClick = then(onBackUp))
                     .padding(horizontal = 16.dp, vertical = 12.dp),
             )
+            // Said beside the button, before the file is written, not only after. It gives way to
+            // a message about a backup or an import: the foot has room for one of the two.
+            if (notice == null) TextMMD(
+                text = stringResource(R.string.today_back_up_note),
+                style = MaterialTheme.typography.bodySmall,
+                fontWeight = FontWeight.Normal,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth(),
+            )
         }
     }
 }
