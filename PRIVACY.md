@@ -1,6 +1,6 @@
 # Cycle — Privacy Policy
 
-Version 0.2.17. Last reviewed 4 November 2026.
+Last reviewed 17 November 2026.
 
 ## The short version
 
@@ -34,16 +34,18 @@ Since Cycle keeps what it stores only on your phone, you can exercise most of th
 
 ## What the app stores, and where
 
-Only what you enter: the days you mark as a period, with how heavy (light, medium or heavy); and, for any day, the moods and symptoms you pick, cervical mucus and an ovulation test result if you log them, whether you marked it as intimate, and a note you type. This is health data, and it is treated as such: it is written only to a database in the app's own private storage on this phone. The app's settings are kept there too.
+Only what you enter: the days you mark as a period, with how heavy (light, medium or heavy); and, for any day, the moods and symptoms you pick, cervical mucus and an ovulation test result if you log them, whether you marked it as intimate, and a note you type. This is health data, and it is treated as such: it is written only to a database in the app's own private storage on this phone. The app's few settings (whether the first-run notice was read, and dark mode) are kept beside it in the same private storage.
 
 The manifest sets `allowBackup="false"`, so Android does not copy any of it into a device backup or a cloud backup. Uninstalling the app deletes it. There is no cloud copy and no copy held by the developer.
 
 Two things leave the app only when you press them, and only to where you point them:
 
-- **Back up** writes one plain-text file of the whole record to a place you choose in Android's file picker. Nothing is written until you choose one.
+- **Back up** writes one plain-text file of the whole record to a place you choose in a file picker (Cabinet's, if it is installed, otherwise Android's). Nothing is written until you choose one. The file is not encrypted: anyone who can open it can read it, so keep it somewhere only you can.
 - **Send to…** hands one line (when the next period is expected, as the app works it out) to Android's share sheet. Whatever app you pick does the sending; the app itself has no way to.
 
 **Import** reads a text file you pick, either one of this app's own backups or a Period Tracker export. It reads only that file.
+
+If Home (`com.wanderwildwood.iori`) is installed, Cycle asks it whether its dark mode switch is on, a yes or no, and sends nothing to it. The manifest also lets Cycle see whether Cabinet and a browser are installed, so that a backup goes to Cabinet's picker and the About page's links can open; it sends neither anything.
 
 ## Permissions, and what each is for
 
