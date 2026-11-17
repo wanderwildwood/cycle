@@ -121,4 +121,13 @@ class ReadFileTest {
         assertTrue(out is Loaded.FromBackup)
         assertEquals(3, (out as Loaded.FromBackup).days)
     }
+
+    @Test fun `a backup saved again with a byte-order mark is still a backup`() {
+        val text = formatBackup(
+            listOf(BleedingDay(LocalDate.parse("2021-03-12").toEpochDay(), 2, false)),
+            emptyList(),
+            LocalDate.parse("2021-03-20"),
+        )
+        assertTrue(readFile("\uFEFF" + text) is Loaded.FromBackup)
+    }
 }

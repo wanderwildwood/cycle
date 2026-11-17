@@ -107,7 +107,9 @@ sealed interface Loaded {
  * "successfully" into nothing. That used to be written to the record as nothing and reported as
  * nothing; it is [Loaded.Unreadable] now, and the caller says so in words.
  */
-fun readFile(text: String?): Loaded {
+fun readFile(raw: String?): Loaded {
+    // An editor on a computer may put a byte-order mark before the first line.
+    val text = raw?.removePrefix("\uFEFF")
     if (text.isNullOrBlank()) return Loaded.Unreadable
     if (looksLikeBackup(text)) {
         val backup = parseBackup(text)
