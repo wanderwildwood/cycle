@@ -35,6 +35,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import com.mudita.mmd.components.text.TextMMD
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -129,7 +131,8 @@ private val INTENSITIES = listOf(R.string.day_intensity_light, R.string.day_inte
  * the calendar behind this screen should already be right when you go back. The moods, symptoms,
  * intimacy and note are held here and written once on the way out — one write instead of one per
  * keystroke, which matters on this hardware. [DisposableEffect] covers the ways out that are not
- * the button: the back gesture, or leaving the app from this screen.
+ * the button, such as the back gesture; leaving the app from this screen writes too, as the app
+ * goes out of sight, so a phone that then stops the app in the background loses nothing.
  */
 @Composable
 fun DayScreen(
@@ -167,6 +170,7 @@ fun DayScreen(
     )
     val save by rememberUpdatedState(onSave)
     DisposableEffect(day) { onDispose { save(latest.value) } }
+    LifecycleEventEffect(Lifecycle.Event.ON_STOP) { save(latest.value) }
 
     // The keyboard takes room from the list and gives it back. Each time the room changes, or the
     // cursor goes into another field, the field being typed in is brought whole onto the page;
