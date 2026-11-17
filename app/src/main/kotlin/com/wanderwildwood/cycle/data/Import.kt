@@ -79,9 +79,20 @@ private fun parseLongDate(value: String): LocalDate? =
 private fun parseNoteDate(value: String): LocalDate? =
     runCatching { LocalDate.parse(value.trim(), NOTE_DATE) }.getOrNull()
 
+/**
+ * The longest a period's recorded end is believed: an end further on (a typing slip in the
+ * other app, or a damaged file) is taken as not recorded, rather than marking months of days.
+ */
+const val MAX_IMPORTED_PERIOD_DAYS = 30L
+
+/** Whether the period's end was recorded, and is believable. */
+val ImportedPeriod.endKnown: Boolean
+    get() = end != null && java.time.temporal.ChronoUnit.DAYS.between(start, end) in 0..MAX_IMPORTED_PERIOD_DAYS
+
 /** Days to mark, for the periods whose end was actually recorded. */
 fun ImportedPeriod.days(): List<LocalDate> {
-    val last = end ?: return listOf(start)
+    if (!endKnown) return listOf(start)
+    val last = end!!
     return generateSequence(start) { if (it < last) it.plusDays(1) else null }.toList()
 }
 

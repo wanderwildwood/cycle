@@ -97,12 +97,17 @@ private fun App() {
     val pick = rememberLauncherForActivityResult(
         FilesOpenDocument(writable = false)
     ) { uri: Uri? ->
-        if (uri != null) scope.launch {
+        // On [writes], like a backup: a restore cut off halfway by the screen going would leave
+        // part of the record in.
+        if (uri != null) writes.launch {
             val res = context.resources
             val message = withContext(Dispatchers.IO) {
                 runCatching {
-                    val text = context.contentResolver.openInputStream(uri)
-                        ?.bufferedReader()?.use { it.readText() }
+                    // A record of years is well under a megabyte; a bigger file is not one.
+                    val text = context.contentResolver.openInputStream(uri)?.use { input ->
+                        val bytes = readAtMost(input, IMPORT_CAP + 1)
+                        if (bytes.size > IMPORT_CAP) null else String(bytes, Charsets.UTF_8)
+                    }
                     // Either file you might be holding: one of our own backups, or a Period Tracker
                     // export. Sniffed rather than asked about -- at the point this
                     // matters you are rebuilding a lost phone.
@@ -231,6 +236,20 @@ private fun App() {
         notice = notice,
         onDismissNotice = { notice = null },
     )
+}
+
+/** The largest file Import reads. */
+private const val IMPORT_CAP = 5 * 1024 * 1024
+
+private fun readAtMost(input: java.io.InputStream, limit: Int): ByteArray {
+    val out = java.io.ByteArrayOutputStream()
+    val buf = ByteArray(64 * 1024)
+    while (out.size() < limit) {
+        val n = input.read(buf, 0, minOf(buf.size, limit - out.size()))
+        if (n < 0) break
+        out.write(buf, 0, n)
+    }
+    return out.toByteArray()
 }
 
 /** Marked without saying how heavy, which is most of them. */

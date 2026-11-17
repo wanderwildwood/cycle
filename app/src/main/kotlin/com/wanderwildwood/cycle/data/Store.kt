@@ -105,6 +105,10 @@ interface CycleDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun write(note: DayNote)
 
+    /** Many notes in one write (one transaction), for a restore or an import. */
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun writeAll(notes: List<DayNote>)
+
     @Query("DELETE FROM notes WHERE day = :day")
     suspend fun clearNote(day: Long)
 }
@@ -205,29 +209,39 @@ class Store(private val dao: CycleDao) {
      */
     suspend fun restore(backup: Backup) {
         dao.markAll(backup.days)
-        backup.notes.forEach { dao.write(it) }
+        dao.writeAll(backup.notes)
     }
 
     /**
      * Take on a parsed export.
      *
-     * Existing days are replaced rather than merged: an import is your history arriving, and two
-     * versions of the same day would only differ by which one was written last anyway.
+     * Period days are replaced rather than merged: an import is your history arriving, and it is
+     * offered only before any period day is marked. A day that already holds moods, symptoms or a
+     * note keeps them, and the imported lines are added under its note.
      */
     suspend fun take(imported: Imported) {
         val marks = imported.periods.flatMap { period ->
             period.days().map { day ->
                 BleedingDay(
                     day = day.toEpochDay(),
-                    lengthUnknown = period.end == null,
+                    lengthUnknown = !period.endKnown,
                 )
             }
         }
         dao.markAll(marks)
-        imported.notes
+        val have = dao.allNotes().associateBy { it.day }
+        val notes = imported.notes
             .groupBy { it.day }
-            .forEach { (day, lines) ->
-                dao.write(DayNote(day = day.toEpochDay(), note = lines.joinToString("\n") { it.text }))
+            .map { (day, lines) ->
+                val text = lines.joinToString("\n") { it.text }
+                val old = have[day.toEpochDay()]
+                when {
+                    old == null -> DayNote(day = day.toEpochDay(), note = text)
+                    old.note.contains(text) -> old
+                    old.note.isBlank() -> old.copy(note = text)
+                    else -> old.copy(note = old.note + "\n" + text)
+                }
             }
+        dao.writeAll(notes)
     }
 }

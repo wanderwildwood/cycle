@@ -80,6 +80,14 @@ class ImportTest {
         assertEquals(LocalDate.parse("2021-03-15"), out.periods.single().end)
     }
 
+    @Test fun `an end far past its start is taken as not recorded`() {
+        val start = LocalDate.parse("2021-03-12")
+        val wild = com.wanderwildwood.cycle.data.ImportedPeriod(start, LocalDate.parse("9999-03-15"))
+        assertEquals(listOf(start), wild.days())
+        val real = com.wanderwildwood.cycle.data.ImportedPeriod(start, start.plusDays(4))
+        assertEquals(5, real.days().size)
+    }
+
     @Test fun `an empty export yields nothing rather than failing`() {
         val out = parsePeriodTrackerExport("")
         assertTrue(out.periods.isEmpty())
