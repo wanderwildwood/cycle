@@ -39,6 +39,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
@@ -133,7 +135,9 @@ private fun App() {
             notice = runCatching {
                 val text = store.backup(LocalDate.now())
                 val days = store.dayCount()
-                val out = context.contentResolver.openOutputStream(uri)
+                // "wt": over an older backup, "w" alone can leave that file's tail after the new text.
+                val out = runCatching { context.contentResolver.openOutputStream(uri, "wt") }.getOrNull()
+                    ?: context.contentResolver.openOutputStream(uri)
                     ?: error("no output stream")
                 out.bufferedWriter().use { it.write(text) }
                 res.getQuantityString(R.plurals.notice_backed_up, days, days)
@@ -141,8 +145,9 @@ private fun App() {
         }
     }
 
-    // Read once per composition: the app is opened, read and closed.
-    val today = LocalDate.now()
+    // Read again each time the app comes back, so an app left open overnight is on the new day.
+    var today by remember { mutableStateOf(LocalDate.now()) }
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { today = LocalDate.now() }
     val bleedingToday = today in days
     val outlook = forecast(days, today, unknownLengths, positives)
 
