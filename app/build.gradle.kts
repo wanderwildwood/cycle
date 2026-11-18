@@ -18,8 +18,8 @@ android {
     // The Kompakt runs 31; 28 is kept as the floor because nothing here needs anything newer.
     minSdk = 28
     targetSdk = 36
-    versionCode = 40
-    versionName = "0.3.16"
+    versionCode = 41
+    versionName = "0.3.17"
   }
 
   // The real keystore in signing/ signs every build type, so the very first install
