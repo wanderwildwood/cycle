@@ -206,10 +206,14 @@ class Store(private val dao: CycleDao) {
      *
      * Unlike [take] this restores intensity, moods, symptoms and intimacy as well as the days, so a
      * phone rebuilt from a backup is the phone that was lost rather than an outline of it.
+     *
+     * A day that already holds moods, symptoms or a note keeps them; the backup fills in what it
+     * left blank and its note is added under the day's own (see [mergeDay]).
      */
     suspend fun restore(backup: Backup) {
         dao.markAll(backup.days)
-        dao.writeAll(backup.notes)
+        val have = dao.allNotes().associateBy { it.day }
+        dao.writeAll(backup.notes.map { mergeDay(have[it.day], it) })
     }
 
     /**
@@ -234,13 +238,7 @@ class Store(private val dao: CycleDao) {
             .groupBy { it.day }
             .map { (day, lines) ->
                 val text = lines.joinToString("\n") { it.text }
-                val old = have[day.toEpochDay()]
-                when {
-                    old == null -> DayNote(day = day.toEpochDay(), note = text)
-                    old.note.contains(text) -> old
-                    old.note.isBlank() -> old.copy(note = text)
-                    else -> old.copy(note = old.note + "\n" + text)
-                }
+                mergeDay(have[day.toEpochDay()], DayNote(day = day.toEpochDay(), note = text))
             }
         dao.writeAll(notes)
     }
