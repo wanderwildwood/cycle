@@ -4,6 +4,7 @@ import android.content.Intent
 import android.content.res.Resources
 import android.net.Uri
 import android.os.Bundle
+import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -60,6 +61,8 @@ private val writes = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // What is kept here is about the body: no screenshots, and nothing in the Recents picture.
+        window.setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE)
         setContent {
             // A blinking cursor is a repaint twice a second on an e-ink panel, for nothing.
             CompositionLocalProvider(LocalCursorBlinkEnabled provides false) {

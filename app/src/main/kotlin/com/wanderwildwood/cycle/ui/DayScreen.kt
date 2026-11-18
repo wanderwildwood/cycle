@@ -331,21 +331,23 @@ fun DayScreen(
             item {
                 Column {
                     Heading(stringResource(R.string.day_heading_note))
-                    BasicTextField(
-                        value = note,
-                        onValueChange = {
-                            noteFull = it.length >= MAX_NOTE
-                            note = capped(it, MAX_NOTE)
-                        },
-                        textStyle = MaterialTheme.typography.bodySmall.copy(color = Color.Black),
-                        cursorBrush = SolidColor(Color.Black),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .heightIn(min = 96.dp)
-                            .keptWhole(typingIn)
-                            .border(1.dp, Color.Black)
-                            .padding(10.dp),
-                    )
+                    NoLearning {
+                        BasicTextField(
+                            value = note,
+                            onValueChange = {
+                                noteFull = it.length >= MAX_NOTE
+                                note = capped(it, MAX_NOTE)
+                            },
+                            textStyle = MaterialTheme.typography.bodySmall.copy(color = Color.Black),
+                            cursorBrush = SolidColor(Color.Black),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .heightIn(min = 96.dp)
+                                .keptWhole(typingIn)
+                                .border(1.dp, Color.Black)
+                                .padding(10.dp),
+                        )
+                    }
                     if (noteFull) {
                         Spacer(Modifier.height(6.dp))
                         TextMMD(text = stringResource(R.string.day_note_full), style = MaterialTheme.typography.bodySmall)
@@ -444,32 +446,34 @@ private fun Tags(
         }
 
         Spacer(Modifier.height(8.dp))
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            BasicTextField(
-                value = typed,
-                onValueChange = {
-                    typedFull = it.length >= MAX_TAG
-                    typed = capped(it, MAX_TAG)
-                },
-                singleLine = true,
-                textStyle = MaterialTheme.typography.bodySmall.copy(color = Color.Black),
-                cursorBrush = SolidColor(Color.Black),
-                // Enter commits, so the common case never needs the button beside it.
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                keyboardActions = KeyboardActions(onDone = { commit() }),
-                modifier = Modifier
-                    .weight(1f)
-                    .heightIn(min = 48.dp)
-                    .focusRequester(field)
-                    .keptWhole(typingIn)
-                    .border(1.dp, Color.Black)
-                    .padding(horizontal = 10.dp, vertical = 10.dp),
-            )
-            HouseButton(label = stringResource(R.string.day_tag_add), onClick = { commit() })
+        NoLearning {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                BasicTextField(
+                    value = typed,
+                    onValueChange = {
+                        typedFull = it.length >= MAX_TAG
+                        typed = capped(it, MAX_TAG)
+                    },
+                    singleLine = true,
+                    textStyle = MaterialTheme.typography.bodySmall.copy(color = Color.Black),
+                    cursorBrush = SolidColor(Color.Black),
+                    // Enter commits, so the common case never needs the button beside it.
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                    keyboardActions = KeyboardActions(onDone = { commit() }),
+                    modifier = Modifier
+                        .weight(1f)
+                        .heightIn(min = 48.dp)
+                        .focusRequester(field)
+                        .keptWhole(typingIn)
+                        .border(1.dp, Color.Black)
+                        .padding(horizontal = 10.dp, vertical = 10.dp),
+                )
+                HouseButton(label = stringResource(R.string.day_tag_add), onClick = { commit() })
+        }
         }
         if (typedFull) {
             Spacer(Modifier.height(6.dp))

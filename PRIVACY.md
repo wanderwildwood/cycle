@@ -36,6 +36,8 @@ Since Cycle keeps what it stores only on your phone, you can exercise most of th
 
 Only what you enter: the days you mark as a period, with how heavy (light, medium or heavy); and, for any day, the moods and symptoms you pick, cervical mucus and an ovulation test result if you log them, whether you marked it as intimate, and a note you type. This is health data, and it is treated as such: it is written only to a database in the app's own private storage on this phone. The app's few settings (whether the first-run notice was read, and dark mode) are kept beside it in the same private storage.
 
+The app's screens are marked secure, so they are left out of screenshots and the Recents picture. The note and tag boxes ask the keyboard not to learn what is typed in them, so a word you write about your body does not turn up in its suggestions elsewhere; whether a keyboard honors that is up to the keyboard.
+
 The manifest sets `allowBackup="false"`, so Android does not copy any of it into a device backup or a cloud backup. Uninstalling the app deletes it. There is no cloud copy and no copy held by the developer.
 
 Two things leave the app only when you press them, and only to where you point them:
