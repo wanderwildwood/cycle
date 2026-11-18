@@ -32,6 +32,11 @@ class StoreTest {
         override fun bleedingDays(): Flow<List<BleedingDay>> = bleeding.map { it.values.sortedBy { d -> d.day } }
         override suspend fun mark(day: BleedingDay) { bleeding.value = bleeding.value + (day.day to day) }
         override suspend fun markAll(days: List<BleedingDay>) { bleeding.value = bleeding.value + days.associateBy { it.day } }
+        override suspend fun setIntensity(day: Long, intensity: Int): Int {
+            val row = bleeding.value[day] ?: return 0
+            bleeding.value = bleeding.value + (day to row.copy(intensity = intensity))
+            return 1
+        }
         override suspend fun count(): Int = bleeding.value.size
         override suspend fun allBleeding(): List<BleedingDay> = bleeding.value.values.sortedBy { it.day }
         override fun notes(): Flow<List<DayNote>> = notes.map { it.values.sortedBy { n -> n.day } }
@@ -94,6 +99,19 @@ class StoreTest {
         val dao = FakeDao()
         Store(dao).take(Imported(emptyList(), listOf(ImportedNote(first, "c".repeat(MAX_NOTE * 2)))))
         assertEquals(MAX_NOTE, dao.notes.value.getValue(day).note.length)
+    }
+
+    @Test fun `changing how heavy an imported start was keeps its length unknown`() = runBlocking {
+        val dao = FakeDao()
+        dao.mark(BleedingDay(day, lengthUnknown = true))
+        Store(dao).mark(first, 3)
+        assertEquals(BleedingDay(day, intensity = 3, lengthUnknown = true), dao.bleeding.value.getValue(day))
+    }
+
+    @Test fun `marking a day not yet marked adds it`() = runBlocking {
+        val dao = FakeDao()
+        Store(dao).mark(first, 1)
+        assertEquals(BleedingDay(day, intensity = 1), dao.bleeding.value.getValue(day))
     }
 
     @Test fun `a note already at the limit is not cut by a join`() {

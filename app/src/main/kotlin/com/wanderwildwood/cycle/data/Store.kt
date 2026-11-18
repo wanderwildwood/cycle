@@ -79,6 +79,10 @@ interface CycleDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun markAll(days: List<BleedingDay>)
 
+    /** A marked day's intensity changed, and nothing else on it; how many rows that touched. */
+    @Query("UPDATE bleeding SET intensity = :intensity WHERE day = :day")
+    suspend fun setIntensity(day: Long, intensity: Int): Int
+
     @Query("SELECT COUNT(*) FROM bleeding")
     suspend fun count(): Int
 
@@ -178,8 +182,17 @@ class Store(private val dao: CycleDao) {
         (dao.allBleeding().map { it.day } + dao.allNotes().filterNot { it.isEmpty() }.map { it.day })
             .toSet().size
 
-    suspend fun mark(day: LocalDate, intensity: Int = 2) =
-        dao.mark(BleedingDay(day.toEpochDay(), intensity))
+    /**
+     * Mark a day, or change how heavy an already marked day was.
+     *
+     * A day already marked keeps its row and only its intensity changes: replacing the row would
+     * drop "length unknown" from an imported start and turn it into a one-day period.
+     */
+    suspend fun mark(day: LocalDate, intensity: Int = 2) {
+        if (dao.setIntensity(day.toEpochDay(), intensity) == 0) {
+            dao.mark(BleedingDay(day.toEpochDay(), intensity))
+        }
+    }
 
     suspend fun unmark(day: LocalDate) = dao.unmark(day.toEpochDay())
 
