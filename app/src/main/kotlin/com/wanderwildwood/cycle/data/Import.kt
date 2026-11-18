@@ -109,6 +109,22 @@ sealed interface Loaded {
 
     /** Neither: an empty file, the wrong kind of file, or nothing in it that was understood. */
     data object Unreadable : Loaded
+
+    /** Larger than [IMPORT_CAP], which no record of this app's comes near; not read at all. */
+    data object TooLarge : Loaded
+}
+
+/** The largest file Import reads. A record of years is well under a megabyte. */
+const val IMPORT_CAP = 5 * 1024 * 1024
+
+/**
+ * Work out what a picked file is from its bytes, read up to one past [IMPORT_CAP] so that a file
+ * over it is told apart from one exactly at it.
+ */
+fun readBytes(bytes: ByteArray?): Loaded = when {
+    bytes == null -> Loaded.Unreadable
+    bytes.size > IMPORT_CAP -> Loaded.TooLarge
+    else -> readFile(String(bytes, Charsets.UTF_8))
 }
 
 /**

@@ -29,7 +29,8 @@ import com.wanderwildwood.cycle.data.CycleDatabase
 import com.wanderwildwood.cycle.data.DayNote
 import com.wanderwildwood.cycle.data.Store
 import com.wanderwildwood.cycle.data.Loaded
-import com.wanderwildwood.cycle.data.readFile
+import com.wanderwildwood.cycle.data.IMPORT_CAP
+import com.wanderwildwood.cycle.data.readBytes
 import com.wanderwildwood.cycle.ui.CalendarScreen
 import com.wanderwildwood.cycle.ui.CycleTheme
 import com.wanderwildwood.cycle.ui.DayScreen
@@ -107,14 +108,13 @@ private fun App() {
             val message = withContext(Dispatchers.IO) {
                 runCatching {
                     // A record of years is well under a megabyte; a bigger file is not one.
-                    val text = context.contentResolver.openInputStream(uri)?.use { input ->
-                        val bytes = readAtMost(input, IMPORT_CAP + 1)
-                        if (bytes.size > IMPORT_CAP) null else String(bytes, Charsets.UTF_8)
+                    val bytes = context.contentResolver.openInputStream(uri)?.use { input ->
+                        readAtMost(input, IMPORT_CAP + 1)
                     }
                     // Either file you might be holding: one of our own backups, or a Period Tracker
                     // export. Sniffed rather than asked about -- at the point this
                     // matters you are rebuilding a lost phone.
-                    when (val loaded = readFile(text)) {
+                    when (val loaded = readBytes(bytes)) {
                         is Loaded.FromBackup -> {
                             store.restore(loaded.backup)
                             res.getQuantityString(R.plurals.notice_restored, loaded.days, loaded.days)
@@ -125,6 +125,7 @@ private fun App() {
                             res.getQuantityString(R.plurals.notice_imported, n, n)
                         }
                         Loaded.Unreadable -> res.getString(R.string.notice_unreadable)
+                        Loaded.TooLarge -> res.getString(R.string.notice_too_large)
                     }
                 }.getOrElse { res.getString(R.string.notice_import_failed) }
             }
@@ -240,9 +241,6 @@ private fun App() {
         onDismissNotice = { notice = null },
     )
 }
-
-/** The largest file Import reads. */
-private const val IMPORT_CAP = 5 * 1024 * 1024
 
 private fun readAtMost(input: java.io.InputStream, limit: Int): ByteArray {
     val out = java.io.ByteArrayOutputStream()

@@ -1,10 +1,12 @@
 package com.wanderwildwood.cycle
 
 import com.wanderwildwood.cycle.data.BleedingDay
+import com.wanderwildwood.cycle.data.IMPORT_CAP
 import com.wanderwildwood.cycle.data.DayNote
 import com.wanderwildwood.cycle.data.Loaded
 import com.wanderwildwood.cycle.data.days
 import com.wanderwildwood.cycle.data.formatBackup
+import com.wanderwildwood.cycle.data.readBytes
 import com.wanderwildwood.cycle.data.readFile
 import com.wanderwildwood.cycle.data.parsePeriodTrackerExport
 import org.junit.Assert.assertEquals
@@ -105,6 +107,13 @@ class ReadFileTest {
         assertEquals(Loaded.Unreadable, readFile(""))
         assertEquals(Loaded.Unreadable, readFile("   \n"))
         assertEquals(Loaded.Unreadable, readFile(null))
+    }
+
+    @Test fun `a file over the size limit is told apart from the wrong kind of file`() {
+        assertEquals(Loaded.TooLarge, readBytes(ByteArray(IMPORT_CAP + 1) { 'a'.code.toByte() }))
+        assertEquals(Loaded.Unreadable, readBytes(ByteArray(IMPORT_CAP) { 'a'.code.toByte() }))
+        assertEquals(Loaded.Unreadable, readBytes(null))
+        assertTrue(readBytes("Period Start\tMar 12, 2021\n".toByteArray()) is Loaded.FromExport)
     }
 
     @Test fun `a period tracker export is read as one`() {

@@ -188,6 +188,7 @@
         <item quantity="other">Backed up %d days. The file is plain text, not encrypted.</item>
     </plurals>
     <string name="notice_unreadable">That file is not a Cycle backup or a Period Tracker export, so nothing was changed.</string>
+    <string name="notice_too_large">That file is larger than any Cycle record, so nothing was changed.</string>
     <string name="notice_import_failed">The file could not be read, so nothing was changed.</string>
     <string name="notice_backup_failed">The backup could not be written, so no file was saved.</string>
 
