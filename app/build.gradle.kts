@@ -26,7 +26,8 @@ android {
   // is already on the key it will keep. A debug-signed build now would mean an
   // uninstall later to escape INSTALL_FAILED_UPDATE_INCOMPATIBLE, and an uninstall
   // takes the whole record with it. It is gitignored and nothing is checked in as a
-  // fallback, so a clone builds unsigned until you point this at a keystore of your own.
+  // fallback: without signing/, a release build comes out unsigned and a debug build
+  // uses the machine's own debug key, until you point this at a keystore of your own.
   val signingPropertiesFile = rootProject.file("signing/signing.properties")
   val realSigningConfig = if (signingPropertiesFile.isFile) {
     val signingProperties = Properties().apply {
