@@ -118,13 +118,17 @@ fun parseBackup(text: String): Backup {
     var ovulationTest = ""
     val note = mutableListOf<String>()
     var inNote = false
+    // Blank lines met inside a note, kept only if the note goes on after them.
+    var blanks = 0
 
     fun flush() {
         val current = day ?: return
         intensity?.let {
             days += BleedingDay(current.toEpochDay(), it, lengthUnknown)
         }
-        val free = note.joinToString("\n").trim('\n')
+        // Held to what the day screen holds: one row too large for the database to read back
+        // would stop the app at every launch.
+        val free = capped(note.joinToString("\n").trim('\n'), MAX_NOTE)
         val row = DayNote(current.toEpochDay(), moods, symptoms, intimacy, free, mucus, ovulationTest)
         if (!row.isEmpty()) notes += row
 
@@ -141,12 +145,23 @@ fun parseBackup(text: String): Backup {
     }
 
     for (raw in text.lineSequence()) {
+        // A blank line in a note is written as the indent alone, and an editor that strips
+        // trailing spaces saves it as an empty line. It is held until the next line says whether
+        // the note goes on or the day has ended.
+        if (inNote && raw.isBlank() && !raw.startsWith(INDENT)) {
+            blanks++
+            continue
+        }
+
         // Inside a note, an indented line is content and belongs to it verbatim — including a line
         // that would otherwise look like a date or a keyword.
         if (inNote && raw.startsWith(INDENT)) {
+            repeat(blanks) { note += "" }
+            blanks = 0
             note += raw.removePrefix(INDENT)
             continue
         }
+        blanks = 0
 
         val line = raw.trim()
 
@@ -169,9 +184,9 @@ fun parseBackup(text: String): Backup {
             // [tagString], which with no vocabulary to order by would sort them
             // alphabetically and quietly rewrite what you picked.
             line.startsWith("moods") ->
-                moods = splitTags(line.removePrefix("moods")).distinct().joinToString("\n")
+                moods = splitTags(line.removePrefix("moods")).joinToString("\n")
             line.startsWith("symptoms") ->
-                symptoms = splitTags(line.removePrefix("symptoms")).distinct().joinToString("\n")
+                symptoms = splitTags(line.removePrefix("symptoms")).joinToString("\n")
             line.startsWith("mucus") ->
                 mucus = line.removePrefix("mucus").trim().lowercase().takeIf { it in MUCUS_VALUES } ?: ""
             line.startsWith("ovulation test") ->
@@ -189,5 +204,6 @@ fun parseBackup(text: String): Backup {
     )
 }
 
+/** The tags on a line, each held to what a chip can carry, and no more of them than [MAX_TAGS]. */
 private fun splitTags(value: String): List<String> =
-    value.split(',').map { it.trim() }.filter { it.isNotEmpty() }
+    value.split(',').map(::cleanTag).filter { it.isNotEmpty() }.distinct().take(MAX_TAGS)

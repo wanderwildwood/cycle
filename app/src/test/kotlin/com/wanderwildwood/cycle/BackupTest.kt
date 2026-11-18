@@ -2,6 +2,9 @@ package com.wanderwildwood.cycle
 
 import com.wanderwildwood.cycle.data.BleedingDay
 import com.wanderwildwood.cycle.data.DayNote
+import com.wanderwildwood.cycle.data.MAX_NOTE
+import com.wanderwildwood.cycle.data.MAX_TAG
+import com.wanderwildwood.cycle.data.MAX_TAGS
 import com.wanderwildwood.cycle.data.formatBackup
 import com.wanderwildwood.cycle.data.looksLikeBackup
 import com.wanderwildwood.cycle.data.parseBackup
@@ -83,6 +86,29 @@ class BackupTest {
         val (_, back) = roundTrip(emptyList(), notes)
         assertEquals("One.\n\nTwo.", back.single().note)
         assertEquals(1, back.size)
+    }
+
+    @Test fun `a blank line in a note survives an editor that strips trailing spaces`() {
+        val notes = listOf(DayNote(day(LocalDate.of(2026, 1, 5)), note = "One.\n\nbleeding heavy\n\n\nTwo."))
+        val days = listOf(BleedingDay(day(LocalDate.of(2026, 1, 6))))
+        val stripped = formatBackup(days, notes, made).lines().joinToString("\n") { it.trimEnd() }
+        val parsed = parseBackup(stripped)
+        assertEquals("One.\n\nbleeding heavy\n\n\nTwo.", parsed.notes.single().note)
+        assertEquals(days, parsed.days)    // the note's own lines marked no day
+    }
+
+    @Test fun `a note too long for the day screen is cut to its limit`() {
+        val text = "Cycle backup\n\n2026-01-05\nnote\n  " + "a".repeat(MAX_NOTE * 3) + "\n"
+        assertEquals(MAX_NOTE, parseBackup(text).notes.single().note.length)
+    }
+
+    @Test fun `tags from a file are held to what a chip carries, and to a number a day can show`() {
+        val long = "b".repeat(MAX_TAG * 2)
+        val many = (1..MAX_TAGS * 2).joinToString(", ") { "t$it" }
+        val text = "Cycle backup\n\n2026-01-05\nmoods $long\nsymptoms $many\n"
+        val back = parseBackup(text).notes.single()
+        assertEquals("b".repeat(MAX_TAG), back.moods)
+        assertEquals(MAX_TAGS, back.symptoms.split('\n').size)
     }
 
     @Test fun `a note that looks like the file format is still just a note`() {

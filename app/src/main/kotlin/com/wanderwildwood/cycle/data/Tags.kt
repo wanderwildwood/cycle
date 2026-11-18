@@ -33,6 +33,9 @@ const val MAX_TAG = 40
 /** The longest note a day keeps. */
 const val MAX_NOTE = 5000
 
+/** The most moods, or symptoms, a day takes from a file: far more than any day's list holds. */
+const val MAX_TAGS = 100
+
 /** [raw] cut to [max] characters; */
 fun capped(raw: String, max: Int): String = raw.take(max)
 
